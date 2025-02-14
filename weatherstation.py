@@ -43,19 +43,7 @@ def log_message(message):
     with open(LOG_FILE, "a") as log_file:
         log_file.write(log_entry)
 
-    print(log_entry)  # Optional: Konsolenausgabe
-
-# def convert_svg_to_png(svg_path, output_path, size=(50, 50)):
-#     """Konvertiert eine SVG-Datei in eine PNG-Datei mit bestimmter Größe."""
-#     cairosvg.svg2png(url=svg_path, write_to=output_path, output_width=size[0], output_height=size[1])
-
-# def get_weather_icon(weather_icon):
-#     """Gibt den passenden Icon-Dateinamen zurück oder ein Standard-Icon."""
-#     return icon_mapping.get(weather_icon, "wi-day-sunny.svg")  # Standard-Icon als Fallback
-
-# def get_weather_icon(weather_icon):
-#     """Gibt den passenden PNG-Dateinamen zurück oder ein Standard-Icon."""
-#     return icon_mapping.get(weather_icon, "wi-day-sunny.png")  # Standard-Icon als Fallback
+    print(f"[{timestamp}] {message}")  # Optional: Konsolenausgabe
 
 def get_weather_icon(weather_icon):
     """Gibt den passenden PNG-Dateinamen zurück oder ein Standard-Icon."""
@@ -102,11 +90,6 @@ def get_weather():
         summary = forecast.daily().data[0].summary
         icon = forecast.daily().data[0].icon
 
-        #translated_summary = translate_summary(summary)
-
-        #weather_text = f"{temperature}°C / {temperature_max}°C, {translated_summary}"
-        #log_message(f"Wetterdaten: {temperature}°C / {temperature_max}°C, {summary}")
-
         # Rückgabe der Temperaturen und Zusammenfassung
         return temperature, temperature_max, summary, icon
     except Exception as e:
@@ -139,28 +122,23 @@ def display_weather(epd, temperature, temperature_max, summary, png_icon_path):
         temp_height = int(epd.height * 0.4)  # 40% der Höhe für Temperaturdaten
         #summary_height = epd.height - temp_height  # Restliche 60% der Höhe für die Zusammenfassung
 
-        padding = 10  # Abstand zu den Rändern
+        PADDING = 10  # Abstand zu den Rändern
 
         # Falls Temperatur >= Temperatur-Maximum → Temperatur in ROT anzeigen
         if temperature >= temperature_max:
-            draw_red.text((padding, padding), f"{temperature}°C", font=font, fill=0)  # ROT
+            draw_red.text((PADDING, PADDING), f"{temperature}°C", font=font, fill=0)  # ROT
         else:
-            draw_black.text((padding, padding), f"{temperature}°C / {temperature_max}°C", font=font, fill=0)  # Schwarz
+            draw_black.text((PADDING, PADDING), f"{temperature}° / {temperature_max}°", font=font, fill=0)  # Schwarz
 
         # Wetterzusammenfassung im unteren Bereich (60%)
-        draw_black.text((padding, temp_height - padding), summary, font=font_summary, fill=0)  # Schwarz
+        draw_black.text((PADDING, temp_height - PADDING), summary, font=font_summary, fill=0)  # Schwarz
 
-        # ========== Wetter-Icon anzeigen ==========
-        # PNG-Datei statt SVG verwenden
-        # icon_filename = icon_mapping.get(weather_icon, "wi-day-sunny.png")  # Fallback-Icon
-        # png_icon_path = f"weather-icons/{icon_filename}"
-
-        log_message(f"png_icon_path {png_icon_path}")
-
+        # Wetter-Icon anzeigen
         try:
+            ICON_SIZE = 40
             weather_icon_img = Image.open(png_icon_path).convert("1")  # In Schwarz-Weiß umwandeln
-            weather_icon_img = weather_icon_img.resize((50, 50))  # Skalieren
-            image_black.paste(weather_icon_img, (epd.width - 60, 10))  # Positionieren
+            weather_icon_img = weather_icon_img.resize((ICON_SIZE, ICON_SIZE))  # Skalieren
+            image_black.paste(weather_icon_img, (epd.height - PADDING - weather_icon_img.width, PADDING))  # Positionieren // height because screen gehts rotated by 90 degress
         except Exception as e:
             log_message(f"Fehler beim Laden des Icons: {e}")
 
