@@ -72,6 +72,7 @@ Edit `.env` with your settings:
 PIRATE_WEATHER_API_KEY=your_api_key_here
 LATITUDE=52.5200
 LONGITUDE=13.4050
+UNITS=si
 ```
 
 Get your free API key from [Pirate Weather](https://pirate-weather.apiable.io/products/weather-data/plans).
@@ -83,6 +84,7 @@ Get your free API key from [Pirate Weather](https://pirate-weather.apiable.io/pr
 | `PIRATE_WEATHER_API_KEY` | Your Pirate Weather API key | Required |
 | `LATITUDE` | Location latitude | 52.5200 (Berlin) |
 | `LONGITUDE` | Location longitude | 13.4050 (Berlin) |
+| `UNITS` | Temperature units ("si" for Celsius, "us" for Fahrenheit) | si |
 
 ## Usage
 

@@ -26,6 +26,8 @@ API_KEY = os.environ.get("PIRATE_WEATHER_API_KEY")
 LATITUDE = float(os.environ.get("LATITUDE", "52.5200"))
 LONGITUDE = float(os.environ.get("LONGITUDE", "13.4050"))
 LANGUAGE = os.environ.get("LANGUAGE", "de")
+UNITS = os.environ.get("UNITS", "si")  # "si" for Celsius, "us" for Fahrenheit
+TEMP_SYMBOL = "°F" if UNITS == "us" else "°C"
 
 # Load icon mapping from file
 with open("icons.json", "r") as file:
@@ -106,7 +108,7 @@ def get_weather():
     log_message("Fetching weather data...")
 
     try:
-        forecast = pirateweather.load_forecast(API_KEY, LATITUDE, LONGITUDE, lang=LANGUAGE, units="si")
+        forecast = pirateweather.load_forecast(API_KEY, LATITUDE, LONGITUDE, lang=LANGUAGE, units=UNITS)
         temperature = round(forecast.currently().temperature) if forecast.currently().temperature is not None else 0  # Round temperature
 
         temperature_max = round(forecast.daily().data[0].temperatureMax) if forecast.daily().data[0].temperatureMax is not None else 0  # Round max temperature
@@ -144,13 +146,13 @@ def display_weather(epd, temperature, temperature_max, summary, png_icon_path):
 
         # If temperature >= max temperature, display in RED
         if temperature >= temperature_max:
-            draw_red.text((PADDING, PADDING), f"{temperature}°C", font=font, fill=0)  # Red
+            draw_red.text((PADDING, PADDING), f"{temperature}{TEMP_SYMBOL}", font=font, fill=0)  # Red
         else:
             # Check if either number is double-digit
             if temperature >= 10 or temperature_max >= 10:
-                draw_black.text((PADDING, PADDING), f"{temperature}°/{temperature_max}°", font=font, fill=0)  # Black with "/" no spaces
+                draw_black.text((PADDING, PADDING), f"{temperature}°/{temperature_max}{TEMP_SYMBOL}", font=font, fill=0)  # Black with "/" no spaces
             else:
-                draw_black.text((PADDING, PADDING), f"{temperature}° / {temperature_max}°", font=font, fill=0)  # Black with " / " with spaces
+                draw_black.text((PADDING, PADDING), f"{temperature}° / {temperature_max}{TEMP_SYMBOL}", font=font, fill=0)  # Black with " / " with spaces
 
         # Weather summary in lower area
         draw_black.text((PADDING, temp_height - PADDING), summary, font=font_summary, fill=0)  # Black
