@@ -11,11 +11,17 @@ A Raspberry Pi-based weather station that displays current weather data on a Wav
 - Low power consumption with e-Paper display sleep mode
 - Temperature displayed in red when current temp equals or exceeds daily max
 
-## Hardware Requirements
+## Requirements
+
+### Hardware
 
 - Raspberry Pi (tested on Pi Zero W, Pi 3, Pi 4)
 - Waveshare 2.13" e-Paper HAT (B/C variant - black/white/red)
 - Internet connection for weather data
+
+### API Key
+
+- [Pirate Weather API Key](https://pirate-weather.apiable.io/products/weather-data/plans) - Free plan available for personal use, allowing up to 10,000 requests per month
 
 ## Installation
 
@@ -68,7 +74,7 @@ LATITUDE=52.5200
 LONGITUDE=13.4050
 ```
 
-Get your free API key from [Pirate Weather](https://pirateweather.net/).
+Get your free API key from [Pirate Weather](https://pirate-weather.apiable.io/products/weather-data/plans).
 
 ## Configuration
 
