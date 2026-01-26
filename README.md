@@ -21,7 +21,7 @@ A Raspberry Pi-based weather station that displays current weather data on a Wav
 
 ### API Key
 
-- [Pirate Weather API Key](https://pirate-weather.apiable.io/products/weather-data/plans) - Free plan available for personal use, allowing up to 10,000 requests per month
+- [Pirate Weather API Key](https://pirate-weather.apiable.io/products/weather-data/plans) - **Free** plan available for personal use, allowing up to 10,000 requests per month
 
 ## Installation
 
