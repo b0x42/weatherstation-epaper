@@ -7,12 +7,12 @@ from PIL import Image, ImageDraw
 SIZE = 48
 LINE_WIDTH = 3
 BLACK = (0, 0, 0, 255)
-TRANSPARENT = (0, 0, 0, 0)
+WHITE = (255, 255, 255, 255)
 
 
 def create_canvas():
-    """Create a transparent 48x48 canvas."""
-    return Image.new("RGBA", (SIZE, SIZE), TRANSPARENT)
+    """Create a white 48x48 canvas for e-paper compatibility."""
+    return Image.new("RGBA", (SIZE, SIZE), WHITE)
 
 
 def draw_sun(draw, cx, cy, outer_r, inner_r, num_rays=8):
