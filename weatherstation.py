@@ -196,7 +196,8 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
             draw_black.text((PADDING, y_position), line, font=font_summary, fill=0)
 
         # Display weather icon using font (align with temperature baseline)
-        icon_x = epd.height - PADDING - ICON_SIZE
+        # Extra -10 to compensate for font's built-in right spacing
+        icon_x = epd.height - PADDING - ICON_SIZE - 10
         temp_ascent = font.getmetrics()[0]
         icon_ascent = font_icon.getmetrics()[0]
         icon_y = PADDING + (temp_ascent - icon_ascent) // 2
