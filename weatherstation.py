@@ -203,6 +203,8 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
             summary, FONT_PATH, available_width, MAX_SUMMARY_LINES,
             FONT_SIZE_SUMMARY_MAX, FONT_SIZE_SUMMARY_MIN
         )
+        log_message(f"DEBUG: Summary lines returned: {summary_lines}")
+        log_message(f"DEBUG: Font size: {font_summary.size}, Available width: {available_width}")
 
         # Calculate text position (55% of height for temperature area)
         temp_height = int(epd.width * 0.55)
