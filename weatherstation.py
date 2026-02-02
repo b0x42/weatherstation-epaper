@@ -153,8 +153,8 @@ def get_line_height(font):
     return ascent + descent + 2  # Add 2 pixels for line spacing
 
 
-def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_size):
-    """Find the largest font size that fits text within max_lines.
+def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_size, max_height=None):
+    """Find the largest font size that fits text within max_lines and max_height.
 
     Returns (font, lines) tuple.
     """
@@ -167,6 +167,11 @@ def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_si
         # Check if all words fit (no truncation)
         words_in_lines = sum(len(line.split()) for line in lines)
         if words_in_lines >= len(words):
+            # Check height constraint if provided
+            if max_height is not None:
+                total_height = len(lines) * get_line_height(font)
+                if total_height > max_height:
+                    continue  # Try smaller font size
             return font, lines
 
     # At minimum size, return whatever fits
@@ -197,17 +202,18 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
         image_red = Image.new("1", (epd.height, epd.width), 255)  # White
         draw_red = ImageDraw.Draw(image_red)
 
-        # Load fonts
-        available_width = epd.height - (2 * PADDING)  # epd.height is width in landscape
-        font_summary, summary_lines = fit_summary_to_lines(
-            summary, FONT_PATH, available_width, MAX_SUMMARY_LINES,
-            FONT_SIZE_SUMMARY_MAX, FONT_SIZE_SUMMARY_MIN
-        )
-        log_message(f"DEBUG: Summary lines returned: {summary_lines}")
-        log_message(f"DEBUG: Font size: {font_summary.size}, Available width: {available_width}")
-
         # Calculate text position (55% of height for temperature area)
         temp_height = int(epd.width * 0.55)
+
+        # Load fonts with width and height constraints
+        available_width = epd.height - (2 * PADDING)  # epd.height is width in landscape
+        available_height = epd.width - temp_height - PADDING  # Space from temp area to bottom
+        font_summary, summary_lines = fit_summary_to_lines(
+            summary, FONT_PATH, available_width, MAX_SUMMARY_LINES,
+            FONT_SIZE_SUMMARY_MAX, FONT_SIZE_SUMMARY_MIN, available_height
+        )
+        log_message(f"DEBUG: Summary lines returned: {summary_lines}")
+        log_message(f"DEBUG: Font size: {font_summary.size}, Available width: {available_width}, Available height: {available_height}")
 
         # Calculate available width for temperature text
         # Reserve space for icon: ICON_SIZE + PADDING + extra offset (10) + gap (5)
