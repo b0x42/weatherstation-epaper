@@ -24,9 +24,9 @@ UPDATE_INTERVAL_SECONDS = int(os.environ.get("UPDATE_INTERVAL_SECONDS", "1800"))
 
 # Fixed display settings (optimized for 2.13" e-Paper)
 FONT_SIZE_TEMPERATURE = 32
-FONT_SIZE_SUMMARY_MAX = 18
+FONT_SIZE_SUMMARY_MAX = 20
 FONT_SIZE_SUMMARY_MIN = 12
-MAX_SUMMARY_LINES = 2
+MAX_SUMMARY_LINES = 3
 ICON_SIZE = 48
 PADDING = 10
 FONT_PATH = os.environ.get("FONT_PATH", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
@@ -153,8 +153,8 @@ def get_line_height(font):
     return ascent + descent + 2  # Add 2 pixels for line spacing
 
 
-def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_size):
-    """Find the largest font size that fits text within max_lines.
+def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_size, max_height=None):
+    """Find the largest font size that fits text within max_lines and max_height.
 
     Returns (font, lines) tuple.
     """
@@ -167,11 +167,23 @@ def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_si
         # Check if all words fit (no truncation)
         words_in_lines = sum(len(line.split()) for line in lines)
         if words_in_lines >= len(words):
+            # Check height constraint if provided
+            if max_height is not None:
+                total_height = len(lines) * get_line_height(font)
+                if total_height > max_height:
+                    continue  # Try smaller font size
             return font, lines
 
     # At minimum size, return whatever fits
     font = ImageFont.truetype(font_path, min_size)
-    return font, wrap_text(text, font, max_width, max_lines)
+    lines = wrap_text(text, font, max_width, max_lines)
+
+    # Check if text was truncated and log error
+    words_in_lines = sum(len(line.split()) for line in lines)
+    if words_in_lines < len(words):
+        log_message(f"ERROR: Summary text truncated! Original: '{text}' ({len(words)} words) - Only fit: {words_in_lines} words at {min_size}px font with {max_lines} lines")
+
+    return font, lines
 
 
 def display_weather(epd, temperature, temperature_max, summary, icon_char):
@@ -190,16 +202,18 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
         image_red = Image.new("1", (epd.height, epd.width), 255)  # White
         draw_red = ImageDraw.Draw(image_red)
 
-        # Load fonts
-        available_width = epd.height - (2 * PADDING)  # epd.height is width in landscape
-        font_summary, summary_lines = fit_summary_to_lines(
-            summary, FONT_PATH, available_width, MAX_SUMMARY_LINES,
-            FONT_SIZE_SUMMARY_MAX, FONT_SIZE_SUMMARY_MIN
-        )
-        font_icon = ImageFont.truetype(ICON_FONT_PATH, ICON_SIZE)
-
         # Calculate text position (55% of height for temperature area)
         temp_height = int(epd.width * 0.55)
+
+        # Load fonts with width and height constraints
+        available_width = epd.height - (2 * PADDING)  # epd.height is width in landscape
+        available_height = epd.width - temp_height - PADDING  # Space from temp area to bottom
+        font_summary, summary_lines = fit_summary_to_lines(
+            summary, FONT_PATH, available_width, MAX_SUMMARY_LINES,
+            FONT_SIZE_SUMMARY_MAX, FONT_SIZE_SUMMARY_MIN, available_height
+        )
+        log_message(f"DEBUG: Summary lines returned: {summary_lines}")
+        log_message(f"DEBUG: Font size: {font_summary.size}, Available width: {available_width}, Available height: {available_height}")
 
         # Calculate available width for temperature text
         # Reserve space for icon: ICON_SIZE + PADDING + extra offset (10) + gap (5)
@@ -234,9 +248,16 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
             y_position = temp_height + (i * line_height)
             draw_black.text((PADDING, y_position), line, font=font_summary, fill=0)
 
-        # Display weather icon using font (align with temperature baseline)
-        # Extra -10 to compensate for font's built-in right spacing
-        icon_x = epd.height - PADDING - ICON_SIZE - 10
+        # Calculate available width for icon based on actual temp text width
+        temp_text_width = temp_font.getlength(temp_text)
+        gap = 5  # Minimum gap between temp and icon
+        available_icon_width = epd.height - PADDING - temp_text_width - gap - PADDING
+        ICON_SIZE_MIN = 32
+        icon_size = max(ICON_SIZE_MIN, min(ICON_SIZE, int(available_icon_width)))
+        font_icon = ImageFont.truetype(ICON_FONT_PATH, icon_size)
+
+        # Display weather icon (align with temperature baseline)
+        icon_x = epd.height - PADDING - icon_size - 10
         temp_ascent = temp_font.getmetrics()[0]
         icon_ascent = font_icon.getmetrics()[0]
         icon_y = PADDING + (temp_ascent - icon_ascent) // 2
