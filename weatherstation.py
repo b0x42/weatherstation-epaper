@@ -9,8 +9,12 @@ import pirateweather
 
 # Directory containing this script (for finding package data files)
 SCRIPT_DIR = Path(__file__).parent
-from waveshare_epd import epd2in13bc
 from PIL import Image, ImageDraw, ImageFont
+from display_config import (
+    load_display_module,
+    get_display_config,
+    get_layout_config
+)
 
 # Configuration (from environment variables)
 API_KEY = os.environ.get("PIRATE_WEATHER_API_KEY")
@@ -21,14 +25,9 @@ UNITS = os.environ.get("UNITS", "si")
 TEMP_SYMBOL = "°F" if UNITS == "us" else "°C"
 FLIP_DISPLAY = os.environ.get("FLIP_DISPLAY", "false").lower() == "true"
 UPDATE_INTERVAL_SECONDS = int(os.environ.get("UPDATE_INTERVAL_SECONDS", "1800"))
+DISPLAY_MODEL = os.environ.get("DISPLAY_MODEL", "epd2in13bc")
 
 # Fixed display settings (optimized for 2.13" e-Paper)
-FONT_SIZE_TEMPERATURE = 32
-FONT_SIZE_SUMMARY_MAX = 18
-FONT_SIZE_SUMMARY_MIN = 12
-MAX_SUMMARY_LINES = 2
-ICON_SIZE = 48
-PADDING = 10
 FONT_PATH = os.environ.get("FONT_PATH", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
 ICON_FONT_PATH = str(SCRIPT_DIR / "weathericons.ttf")
 LOG_FILE = "/var/log/weatherstation.log"
@@ -61,7 +60,18 @@ class WeatherStation:
         self.last_temperature = None
         self.last_temperature_max = None
         self.last_summary = None
-        self.epd = epd2in13bc.EPD()
+
+        # Load display configuration
+        self.display_model = DISPLAY_MODEL
+        self.display_config = get_display_config(self.display_model)
+        self.layout = get_layout_config()
+
+        # Dynamically load display driver
+        EPDClass = load_display_module(self.display_model)
+        self.epd = EPDClass()
+
+        # Store display capabilities
+        self.has_red_layer = self.display_config['has_red']
 
     def should_update_display(self, temperature, temperature_max, summary):
         """Check if weather data has changed."""
@@ -89,7 +99,8 @@ class WeatherStation:
             if temperature is not None and temperature_max is not None:
                 # Only update display if data has changed
                 if self.should_update_display(temperature, temperature_max, summary):
-                    display_weather(self.epd, temperature, temperature_max, summary, icon_char)
+                    display_weather(self.epd, temperature, temperature_max, summary, icon_char,
+                                    self.has_red_layer, self.layout)
                 else:
                     log_message("No change in weather data, display not updated.")
             else:
@@ -174,7 +185,7 @@ def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_si
     return font, wrap_text(text, font, max_width, max_lines)
 
 
-def display_weather(epd, temperature, temperature_max, summary, icon_char):
+def display_weather(epd, temperature, temperature_max, summary, icon_char, has_red_layer, layout):
     """Displays the weather on the e-Paper display."""
     log_message("Displaying weather on e-Paper display...")
 
@@ -190,20 +201,29 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
         image_red = Image.new("1", (epd.height, epd.width), 255)  # White
         draw_red = ImageDraw.Draw(image_red)
 
+        # Get layout constants
+        padding = layout['PADDING']
+        font_size_temp = layout['FONT_SIZE_TEMPERATURE']
+        font_size_summary_max = layout['FONT_SIZE_SUMMARY_MAX']
+        font_size_summary_min = layout['FONT_SIZE_SUMMARY_MIN']
+        max_summary_lines = layout['MAX_SUMMARY_LINES']
+        icon_size = layout['ICON_SIZE']
+        temp_height_ratio = layout['TEMP_HEIGHT_RATIO']
+
         # Load fonts
-        available_width = epd.height - (2 * PADDING)  # epd.height is width in landscape
+        available_width = epd.height - (2 * padding)  # epd.height is width in landscape
         font_summary, summary_lines = fit_summary_to_lines(
-            summary, FONT_PATH, available_width, MAX_SUMMARY_LINES,
-            FONT_SIZE_SUMMARY_MAX, FONT_SIZE_SUMMARY_MIN
+            summary, FONT_PATH, available_width, max_summary_lines,
+            font_size_summary_max, font_size_summary_min
         )
 
         # Calculate text position (55% of height for temperature area)
-        temp_height = int(epd.width * 0.55)
+        temp_height = int(epd.width * temp_height_ratio)
 
         # Calculate available width for temperature text
-        # Reserve space for icon: ICON_SIZE + PADDING + extra offset (5) + gap (3)
-        icon_reserved_width = ICON_SIZE + PADDING + 5 + 3
-        max_temp_width = epd.height - PADDING - icon_reserved_width
+        # Reserve space for icon: icon_size + padding + extra offset (5) + gap (3)
+        icon_reserved_width = icon_size + padding + 5 + 3
+        max_temp_width = epd.height - padding - icon_reserved_width
 
         # Build temperature string
         if temperature >= temperature_max:
@@ -215,7 +235,7 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
                 temp_text = f"{temperature}° / {temperature_max}{TEMP_SYMBOL}"
 
         # Find font size that fits within available width
-        temp_font_size = FONT_SIZE_TEMPERATURE
+        temp_font_size = font_size_temp
         temp_font = ImageFont.truetype(FONT_PATH, temp_font_size)
         while temp_font.getlength(temp_text) > max_temp_width and temp_font_size > 20:
             temp_font_size -= 1
@@ -224,27 +244,27 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
         # Make icon slightly larger than temperature for better visual prominence
         # +6px offset: makes icon more noticeable while maintaining proportional scaling
         # (e.g., temp 32px → icon 38px, temp 20px → icon 26px)
-        icon_size = temp_font_size + 6
-        font_icon = ImageFont.truetype(ICON_FONT_PATH, icon_size)
+        actual_icon_size = temp_font_size + 6
+        font_icon = ImageFont.truetype(ICON_FONT_PATH, actual_icon_size)
 
         # Draw temperature with fitted font
-        if temperature >= temperature_max:
-            draw_red.text((PADDING, PADDING), temp_text, font=temp_font, fill=0)  # Red
+        if has_red_layer and temperature >= temperature_max:
+            draw_red.text((padding, padding), temp_text, font=temp_font, fill=0)  # Red
         else:
-            draw_black.text((PADDING, PADDING), temp_text, font=temp_font, fill=0)  # Black
+            draw_black.text((padding, padding), temp_text, font=temp_font, fill=0)  # Black
 
         # Weather summary in lower area with text wrapping
         line_height = get_line_height(font_summary)
         for i, line in enumerate(summary_lines):
             y_position = temp_height + (i * line_height)
-            draw_black.text((PADDING, y_position), line, font=font_summary, fill=0)
+            draw_black.text((padding, y_position), line, font=font_summary, fill=0)
 
         # Display weather icon using font (align with temperature baseline)
         # Extra -5 to compensate for font's built-in right spacing
-        icon_x = epd.height - PADDING - icon_size - 5
+        icon_x = epd.height - padding - actual_icon_size - 5
         temp_ascent = temp_font.getmetrics()[0]
         icon_ascent = font_icon.getmetrics()[0]
-        icon_y = PADDING + (temp_ascent - icon_ascent) // 2
+        icon_y = padding + (temp_ascent - icon_ascent) // 2
         draw_black.text((icon_x, icon_y), icon_char, font=font_icon, fill=0)
 
         # Rotate image for display orientation
@@ -253,7 +273,11 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char):
         image_red = image_red.rotate(rotation, expand=True)
 
         # Send images to display
-        epd.display(epd.getbuffer(image_black), epd.getbuffer(image_red))
+        if has_red_layer:
+            epd.display(epd.getbuffer(image_black), epd.getbuffer(image_red))
+        else:
+            # Monochrome displays only take one buffer
+            epd.display(epd.getbuffer(image_black))
 
         log_message("Display updated successfully.")
         epd.sleep()
