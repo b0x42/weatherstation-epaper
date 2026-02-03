@@ -5,7 +5,7 @@ and layout configuration for the weather station.
 """
 
 # Display Registry - Maps model names to their specifications
-DISPLAY_REGISTRY = {
+_DISPLAY_REGISTRY = {
     'epd2in13bc': {
         'width': 104,
         'height': 212,
@@ -24,6 +24,23 @@ DISPLAY_REGISTRY = {
     },
 }
 
+# Public read-only access to registry for tests
+DISPLAY_REGISTRY = _DISPLAY_REGISTRY
+
+
+def _validate_model(model_name):
+    """Validate model name exists in registry.
+
+    Args:
+        model_name: Display model identifier to validate
+
+    Raises:
+        ValueError: If model_name is not in registry
+    """
+    if model_name not in _DISPLAY_REGISTRY:
+        supported = ', '.join(_DISPLAY_REGISTRY.keys())
+        raise ValueError(f"Unknown display model: {model_name}. Supported models: {supported}")
+
 
 def load_display_module(model_name):
     """Dynamically import and return EPD class for specified model.
@@ -38,19 +55,13 @@ def load_display_module(model_name):
         ValueError: If model_name is not in registry
         ImportError: If display module cannot be imported
     """
-    if model_name not in DISPLAY_REGISTRY:
-        raise ValueError(
-            f"Unknown display model: {model_name}. "
-            f"Supported models: {', '.join(DISPLAY_REGISTRY.keys())}"
-        )
+    _validate_model(model_name)
 
     try:
         module = __import__(f'waveshare_epd.{model_name}', fromlist=[model_name])
         return getattr(module, 'EPD')
     except ImportError as e:
-        raise ImportError(
-            f"Failed to import display module for {model_name}: {e}"
-        ) from e
+        raise ImportError(f"Failed to import display module for {model_name}: {e}") from e
 
 
 def get_display_config(model_name):
@@ -65,12 +76,8 @@ def get_display_config(model_name):
     Raises:
         ValueError: If model_name is not in registry
     """
-    if model_name not in DISPLAY_REGISTRY:
-        raise ValueError(
-            f"Unknown display model: {model_name}. "
-            f"Supported models: {', '.join(DISPLAY_REGISTRY.keys())}"
-        )
-    return DISPLAY_REGISTRY[model_name]
+    _validate_model(model_name)
+    return _DISPLAY_REGISTRY[model_name]
 
 
 def get_layout_config():

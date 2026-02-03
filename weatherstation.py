@@ -1,20 +1,17 @@
+import json
 import os
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-import json
 
 import pirateweather
+from PIL import Image, ImageDraw, ImageFont
+
+from display_config import get_display_config, get_layout_config, load_display_module
 
 # Directory containing this script (for finding package data files)
 SCRIPT_DIR = Path(__file__).parent
-from PIL import Image, ImageDraw, ImageFont
-from display_config import (
-    load_display_module,
-    get_display_config,
-    get_layout_config
-)
 
 # Configuration (from environment variables)
 API_KEY = os.environ.get("PIRATE_WEATHER_API_KEY")
@@ -75,9 +72,10 @@ class WeatherStation:
 
     def should_update_display(self, temperature, temperature_max, summary):
         """Check if weather data has changed."""
-        if (temperature != self.last_temperature or
-            temperature_max != self.last_temperature_max or
-            summary != self.last_summary):
+        current = (temperature, temperature_max, summary)
+        previous = (self.last_temperature, self.last_temperature_max, self.last_summary)
+
+        if current != previous:
             self.last_temperature = temperature
             self.last_temperature_max = temperature_max
             self.last_summary = summary
@@ -226,13 +224,14 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
         max_temp_width = epd.height - padding - icon_reserved_width
 
         # Build temperature string
+        # When current temp equals or exceeds max, show only current temp
+        # Otherwise show both with spacing based on digit count
         if temperature >= temperature_max:
             temp_text = f"{temperature}{TEMP_SYMBOL}"
+        elif temperature >= 10 or temperature_max >= 10:
+            temp_text = f"{temperature}°/{temperature_max}{TEMP_SYMBOL}"
         else:
-            if temperature >= 10 or temperature_max >= 10:
-                temp_text = f"{temperature}°/{temperature_max}{TEMP_SYMBOL}"
-            else:
-                temp_text = f"{temperature}° / {temperature_max}{TEMP_SYMBOL}"
+            temp_text = f"{temperature}° / {temperature_max}{TEMP_SYMBOL}"
 
         # Find font size that fits within available width
         temp_font_size = font_size_temp
