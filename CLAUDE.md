@@ -27,6 +27,18 @@ Raspberry Pi weather station that displays current weather on a Waveshare 2.13" 
 ## Git Workflow
 Always create a feature branch for new features, functions, or bug fixes. Never commit directly to main.
 
+## Release Process
+1. Update version in `pyproject.toml` to match the new release version (e.g., 1.1.3)
+2. Merge version bump PR to main
+3. Create and push annotated tag:
+   ```bash
+   git tag -a v1.x.x -m "Release v1.x.x"
+   git push origin v1.x.x
+   ```
+4. GitHub Actions will automatically create the release with changelog and build artifacts
+
+**IMPORTANT:** Always ensure the version in `pyproject.toml` matches the git tag version before creating a release.
+
 Tests mock the hardware dependencies (`waveshare_epd`, `pirateweather`) since they require actual Raspberry Pi hardware.
 
 ## Development Notes
