@@ -1,14 +1,10 @@
-# Automated release workflow
-# Triggers on semantic version tags (v*.*.*)
-# Generates changelog, builds packages, and creates GitHub release
-
 name: Create Release
 
 on:
   push:
     tags:
-      - 'v*.*.*'  # Matches semantic version tags like v1.2.3
-  workflow_dispatch:  # Allow manual triggering for testing
+      - 'v*.*.*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,10 +17,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Full history for changelog generation
+        fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
@@ -37,43 +33,46 @@ jobs:
       id: prev_tag
       run: |
         PREV_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sed -n '2p')
-        echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+        echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
         echo "Previous tag: $PREV_TAG"
 
     - name: Generate changelog
       id: changelog
       run: |
         CURRENT_TAG=${GITHUB_REF#refs/tags/}
-        PREV_TAG=${{ steps.prev_tag.outputs.prev_tag }}
+        PREV_TAG="${{ steps.prev_tag.outputs.prev_tag }}"
 
         echo "Generating changelog from $PREV_TAG to $CURRENT_TAG"
 
         # Get commit log
-        COMMITS=$(git log --pretty=format:"- %s" $PREV_TAG..$CURRENT_TAG 2>/dev/null || git log --pretty=format:"- %s" $CURRENT_TAG)
+        if [ -n "$PREV_TAG" ]; then
+          COMMITS=$(git log --pretty=format:"- %s" "$PREV_TAG..$CURRENT_TAG")
+        else
+          COMMITS=$(git log --pretty=format:"- %s" "$CURRENT_TAG")
+        fi
 
-        # Extract PR numbers and create links
+        # Extract PR numbers
         PRS=$(echo "$COMMITS" | grep -o '#[0-9]\+' | sort -u | sed 's/#/- #/g')
 
-        # Create changelog
-        CHANGELOG="## What's Changed
+        # Create changelog file
+        {
+          echo "## What's Changed"
+          echo ""
+          echo "$COMMITS"
+          echo ""
+          echo "## Merged Pull Requests"
+          echo "$PRS"
+          echo ""
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREV_TAG...$CURRENT_TAG"
+        } > CHANGELOG.md
 
-$COMMITS
-
-## Merged Pull Requests
-$PRS
-
-**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREV_TAG...$CURRENT_TAG"
-
-        # Save to file for release notes
-        echo "$CHANGELOG" > CHANGELOG.md
         echo "Changelog generated"
 
     - name: Build Python package
-      run: |
-        python -m build
+      run: python -m build
 
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         body_path: CHANGELOG.md
         files: |
@@ -81,5 +80,3 @@ $PRS
           dist/*.tar.gz
         draft: false
         prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
