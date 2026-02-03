@@ -6,7 +6,9 @@ import sys
 # Mock dependencies before importing weatherstation
 sys.modules['pirateweather'] = MagicMock()
 sys.modules['waveshare_epd'] = MagicMock()
-sys.modules['waveshare_epd.epd2in13bc'] = MagicMock()
+# Mock display modules for both supported displays
+for display_model in ['epd2in13bc', 'epd2in13d']:
+    sys.modules[f'waveshare_epd.{display_model}'] = MagicMock()
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from weatherstation import wrap_text, get_line_height, fit_summary_to_lines

@@ -12,6 +12,7 @@ Raspberry Pi weather station that displays current weather on a Waveshare 2.13" 
 
 ## Key Files
 - `weatherstation.py` - Main application with WeatherStation class and display logic
+- `display_config.py` - Display configuration and dynamic module loading
 - `weathericons.ttf` - Erik Flowers weather icons font
 - `icons.json` - Maps weather condition names to font unicode characters
 - `.env.example` - Environment variable template
@@ -41,10 +42,21 @@ Always create a feature branch for new features, functions, or bug fixes. Never 
 
 Tests mock the hardware dependencies (`waveshare_epd`, `pirateweather`) since they require actual Raspberry Pi hardware.
 
+## Supported Displays
+
+The weather station supports Waveshare 2.13" e-Paper displays (104x212 resolution):
+
+- **epd2in13bc** (default) - Bi-color (black/red)
+- **epd2in13d** - Monochrome (black/white) with partial update support
+
+Configure via `DISPLAY_MODEL` environment variable in `.env` file.
+Both displays share the same layout (104x212 landscape).
+
 ## Development Notes
 - Hardware libraries are mocked in tests - see `tests/test_weatherstation.py`
 - Display uses landscape orientation (212x104 pixels)
-- Supports tri-color: black, white, and red (red used when current temp >= max temp)
+- Bi-color displays: black, white, and red (red used when current temp >= max temp)
+- Monochrome displays: all text rendered in black
 - All config via environment variables (see `.env.example`)
 - Weather icons use font glyphs, not PNG files
 
@@ -52,3 +64,4 @@ Tests mock the hardware dependencies (`waveshare_epd`, `pirateweather`) since th
 - Update icon mappings: Edit `icons.json`
 - Change display layout: Modify `display_weather()` in `weatherstation.py`
 - Add new config options: Add to environment variables section at top of `weatherstation.py`
+- Add support for new display models: Add to `DISPLAY_REGISTRY` in `display_config.py`

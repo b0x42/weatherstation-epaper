@@ -5,7 +5,7 @@
 [![Pirate Weather](https://img.shields.io/badge/Pirate%20Weather-API-purple.svg)](https://pirateweather.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A Raspberry Pi weather station with a Waveshare 2.13" tri-color e-Paper display. Shows current temperature, daily max, and weather summary.
+A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports multiple display models (bi-color and monochrome). Shows current temperature, daily max, and weather summary.
 
 ## Table of Contents
 
@@ -14,6 +14,7 @@ A Raspberry Pi weather station with a Waveshare 2.13" tri-color e-Paper display.
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Supported Display Models](#supported-display-models)
 - [Troubleshooting](#troubleshooting)
 - [File Structure](#file-structure)
 - [Credits](#credits)
@@ -36,7 +37,9 @@ A Raspberry Pi weather station with a Waveshare 2.13" tri-color e-Paper display.
 
 ### Hardware
 - Raspberry Pi (Zero W, 3, 4, or 5)
-- [Waveshare 2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) - the tri-color (black/white/red) version
+- One of these Waveshare 2.13" e-Paper displays (104x212 resolution):
+  - [2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) - bi-color (black/red) - `epd2in13bc` (default)
+  - [2.13" e-Paper HAT (D)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)) - monochrome (black/white) - `epd2in13d`
 - Internet connection
 
 ### Software
@@ -103,6 +106,7 @@ All settings are configured via environment variables in your `.env` file.
 | `LONGITUDE` | Your location's longitude | 13.4050 (Berlin) |
 | `LANGUAGE` | Weather summary language ([see options](https://pirateweather.net/en/latest/API/#language)) | de |
 | `UNITS` | `si` for Celsius, `us` for Fahrenheit | si |
+| `DISPLAY_MODEL` | Display model: `epd2in13bc` (bi-color) or `epd2in13d` (monochrome) | epd2in13bc |
 | `FLIP_DISPLAY` | Set to `true` to rotate display 180° | false |
 | `UPDATE_INTERVAL_SECONDS` | How often to refresh (1800 = 30 min) | 1800 |
 | `FONT_PATH` | TrueType font file | `/usr/share/fonts/.../DejaVuSans-Bold.ttf` |
@@ -142,6 +146,30 @@ tail -f /var/log/weatherstation.log
 
 ---
 
+## Supported Display Models
+
+### Currently Supported (104×212 resolution)
+
+| Model | Type | Colors | Model ID | Status |
+|-------|------|--------|----------|--------|
+| [2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) | Bi-color | Black/Red | `epd2in13bc` | ✅ Default |
+| [2.13" e-Paper HAT (D)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)) | Monochrome | Black/White | `epd2in13d` | ✅ Supported |
+
+**Key Features:**
+- Both displays share the same resolution (104×212) and layout
+- `epd2in13bc`: Red color activates when current temp ≥ max temp
+- `epd2in13d`: Partial update support, all text renders in black
+
+### Future Support (Planned - Phase 2)
+
+Support for 122×250 resolution displays is planned:
+- `epd2in13_V4` - Monochrome with fast refresh
+- `epd2in13b_V4` - Bi-color (black/red)
+- `epd2in13g` - 4-color (black/white/yellow/red)
+- Additional V2, V3 variants
+
+---
+
 ## Troubleshooting
 
 ### Display not updating
@@ -176,12 +204,14 @@ sudo chmod 666 /var/log/weatherstation.log
 ```
 weatherstation-epaper/
 ├── weatherstation.py      # Main application
+├── display_config.py      # Display configuration and module loading
 ├── weatherstation.service # Systemd service file
 ├── requirements.txt       # Python dependencies
 ├── .env                   # Your configuration (create from .env.example)
 ├── .env.example           # Configuration template
 ├── icons.json             # Weather icon unicode mapping
 ├── weathericons.ttf       # Weather icons font
+├── tests/                 # Test files
 └── venv/                  # Python virtual environment (created during setup)
 ```
 
