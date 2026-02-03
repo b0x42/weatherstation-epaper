@@ -1,0 +1,22 @@
+name: Test Release
+
+on:
+  push:
+    tags:
+      - 'test-*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Echo tag
+      run: |
+        echo "Tag: ${GITHUB_REF#refs/tags/}"
+        echo "Test workflow running successfully"
