@@ -24,6 +24,9 @@ Raspberry Pi weather station that displays current weather on a Waveshare 2.13" 
 
 **Always run tests locally before pushing.**
 
+## Git Workflow
+Always create a feature branch for new features, functions, or bug fixes. Never commit directly to main.
+
 Tests mock the hardware dependencies (`waveshare_epd`, `pirateweather`) since they require actual Raspberry Pi hardware.
 
 ## Development Notes
