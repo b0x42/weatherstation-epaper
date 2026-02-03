@@ -6,10 +6,8 @@ name: Create Release
 
 on:
   push:
-    branches: []  # Disable branch triggers - only run on tags
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v*.*.*'  # Alternative pattern for broader matching
+      - 'v*.*.*'  # Matches semantic version tags like v1.2.3
 
 permissions:
   contents: write
