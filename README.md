@@ -11,9 +11,9 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 
 - [Quick Start](#quick-start)
 - [What You Need](#what-you-need)
-- [Supported Display Models](#supported-display-models)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Supported Display Models](#supported-display-models)
 - [Usage](#usage)
 - [Troubleshooting](#troubleshooting)
 - [File Structure](#file-structure)
