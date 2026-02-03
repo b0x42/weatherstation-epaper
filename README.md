@@ -11,6 +11,7 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 
 - [Quick Start](#quick-start)
 - [What You Need](#what-you-need)
+- [Supported Display Models](#supported-display-models)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
@@ -44,30 +45,6 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 ### Software
 - Free [Pirate Weather API key](https://pirate-weather.apiable.io/products/weather-data/plans)
 - Raspberry Pi OS or Debian-based Linux distro
-
----
-
-## Supported Display Models
-
-### Currently Supported (104×212 resolution)
-
-| Model | Type | Colors | Model ID | Status |
-|-------|------|--------|----------|--------|
-| [2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) | Bi-color | Black/Red | `epd2in13bc` | ✅ Default |
-| [2.13" e-Paper HAT (D)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)) | Monochrome | Black/White | `epd2in13d` | ✅ Supported |
-
-**Key Features:**
-- Both displays share the same resolution (104×212) and layout
-- `epd2in13bc`: Red color activates when current temp ≥ max temp
-- `epd2in13d`: Partial update support, all text renders in black
-
-### Future Support (Planned - Phase 2)
-
-Support for 122×250 resolution displays is planned:
-- `epd2in13_V4` - Monochrome with fast refresh
-- `epd2in13b_V4` - Bi-color (black/red)
-- `epd2in13g` - 4-color (black/white/yellow/red)
-- Additional V2, V3 variants
 
 ---
 
@@ -133,6 +110,30 @@ All settings are configured via environment variables in your `.env` file.
 | `FLIP_DISPLAY` | Set to `true` to rotate display 180° | false |
 | `UPDATE_INTERVAL_SECONDS` | How often to refresh (1800 = 30 min) | 1800 |
 | `FONT_PATH` | TrueType font file | `/usr/share/fonts/.../DejaVuSans-Bold.ttf` |
+
+---
+
+## Supported Display Models
+
+### Currently Supported (104×212 resolution)
+
+| Model | Type | Colors | Model ID | Status |
+|-------|------|--------|----------|--------|
+| [2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) | Bi-color | Black/Red | `epd2in13bc` | ✅ Default |
+| [2.13" e-Paper HAT (D)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)) | Monochrome | Black/White | `epd2in13d` | ✅ Supported |
+
+**Key Features:**
+- Both displays share the same resolution (104×212) and layout
+- `epd2in13bc`: Red color activates when current temp ≥ max temp
+- `epd2in13d`: Partial update support, all text renders in black
+
+### Future Support (Planned - Phase 2)
+
+Support for 122×250 resolution displays is planned:
+- `epd2in13_V4` - Monochrome with fast refresh
+- `epd2in13b_V4` - Bi-color (black/red)
+- `epd2in13g` - 4-color (black/white/yellow/red)
+- Additional V2, V3 variants
 
 ---
 
