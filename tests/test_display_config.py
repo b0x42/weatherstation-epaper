@@ -1,6 +1,8 @@
 """Tests for display_config module."""
+import os
 import sys
 from unittest.mock import MagicMock
+
 import pytest
 
 # Mock waveshare_epd before importing display_config
@@ -10,14 +12,14 @@ for display_model in ['epd2in13bc', 'epd2in13d']:
     mock_module.EPD = MagicMock()
     sys.modules[f'waveshare_epd.{display_model}'] = mock_module
 
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
 
 from display_config import (
     DISPLAY_REGISTRY,
-    load_display_module,
     get_display_config,
-    get_layout_config
+    get_layout_config,
+    load_display_module,
 )
 
 

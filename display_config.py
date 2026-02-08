@@ -101,5 +101,5 @@ def get_layout_config():
         'ICON_SIZE': 48,
         'MAX_SUMMARY_LINES': 3,
         'TEMP_HEIGHT_RATIO': 0.50,
-        'LINE_SPACING': 4,  # Extra spacing between summary lines
+        'LINE_SPACING': 4,
     }
