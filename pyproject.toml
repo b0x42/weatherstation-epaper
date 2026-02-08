@@ -24,4 +24,4 @@ weatherstation = "weatherstation:main"
 py-modules = ["weatherstation", "display_config"]
 
 [tool.setuptools.package-data]
-"*" = ["icons.json", "weathericons.ttf"]
+"*" = ["icons/icons.json", "icons/weathericons.ttf"]

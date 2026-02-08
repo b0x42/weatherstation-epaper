@@ -13,8 +13,8 @@ Raspberry Pi weather station that displays current weather on a Waveshare 2.13" 
 ## Key Files
 - `weatherstation.py` - Main application with WeatherStation class and display logic
 - `display_config.py` - Display configuration and dynamic module loading
-- `weathericons.ttf` - Erik Flowers weather icons font
-- `icons.json` - Maps weather condition names to font unicode characters
+- `icons/weathericons.ttf` - Erik Flowers weather icons font
+- `icons/icons.json` - Maps weather condition names to font unicode characters
 - `.env.example` - Environment variable template
 - `weatherstation.service` - Systemd service file for auto-start
 
@@ -95,7 +95,7 @@ icon_top_whitespace: 10px (glyph starts 10px below font baseline)
 **Note:** Font rendering may differ slightly between emulator (macOS) and hardware (Raspberry Pi) due to different font rendering engines. Always verify final layout on actual hardware.
 
 ## Common Tasks
-- Update icon mappings: Edit `icons.json`
+- Update icon mappings: Edit `icons/icons.json`
 - Change display layout: Modify `display_weather()` in `weatherstation.py`
 - Add new config options: Add to environment variables section at top of `weatherstation.py`
 - Add support for new display models: Add to `DISPLAY_REGISTRY` in `display_config.py`

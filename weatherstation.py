@@ -24,13 +24,13 @@ FLIP_DISPLAY = os.environ.get("FLIP_DISPLAY", "false").lower() == "true"
 UPDATE_INTERVAL_SECONDS = int(os.environ.get("UPDATE_INTERVAL_SECONDS", "1800"))
 DISPLAY_MODEL = os.environ.get("DISPLAY_MODEL", "epd2in13bc")
 
-# Fixed display settings (optimized for 2.13" e-Paper)
+# Display settings
 FONT_PATH = os.environ.get("FONT_PATH", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
-ICON_FONT_PATH = str(SCRIPT_DIR / "weathericons.ttf")
-LOG_FILE = "/var/log/weatherstation.log"
+ICON_FONT_PATH = str(SCRIPT_DIR / "icons" / "weathericons.ttf")
+LOG_FILE = os.environ.get("LOG_FILE_PATH", "/var/log/weatherstation.log")
 
 # Load icon mapping from file
-with open(SCRIPT_DIR / "icons.json", "r", encoding="utf-8") as file:
+with open(SCRIPT_DIR / "icons" / "icons.json", "r", encoding="utf-8") as file:
     icon_mapping = json.load(file)
 
 
@@ -64,8 +64,8 @@ class WeatherStation:
         self.layout = get_layout_config()
 
         # Dynamically load display driver
-        EPDClass = load_display_module(self.display_model)
-        self.epd = EPDClass()
+        epd_class = load_display_module(self.display_model)
+        self.epd = epd_class()
 
         # Store display capabilities
         self.has_red_layer = self.display_config['has_red']
@@ -121,11 +121,15 @@ def get_weather():
 
     try:
         forecast = pirateweather.load_forecast(API_KEY, LATITUDE, LONGITUDE, lang=LANGUAGE, units=UNITS)
-        temperature = round(forecast.currently().temperature) if forecast.currently().temperature is not None else 0  # Round temperature
 
-        temperature_max = round(forecast.daily().data[0].temperatureMax) if forecast.daily().data[0].temperatureMax is not None else 0  # Round max temperature
-        summary = forecast.daily().data[0].summary
-        icon = forecast.daily().data[0].icon
+        current_temp = forecast.currently().temperature
+        temperature = round(current_temp) if current_temp is not None else 0
+
+        daily = forecast.daily().data[0]
+        max_temp = daily.temperatureMax
+        temperature_max = round(max_temp) if max_temp is not None else 0
+        summary = daily.summary
+        icon = daily.icon
 
         return temperature, temperature_max, summary, icon
     except (pirateweather.PirateWeatherError, ConnectionError, TimeoutError) as e:
@@ -196,12 +200,10 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
         epd.init()
         epd.Clear()
 
-        # Create empty black/white image (landscape orientation)
-        image_black = Image.new("1", (epd.height, epd.width), 255)  # White
+        # Create images for black and red layers (landscape orientation)
+        image_black = Image.new("1", (epd.height, epd.width), 255)
         draw_black = ImageDraw.Draw(image_black)
-
-        # Create empty image for red elements
-        image_red = Image.new("1", (epd.height, epd.width), 255)  # White
+        image_red = Image.new("1", (epd.height, epd.width), 255)
         draw_red = ImageDraw.Draw(image_red)
 
         # Get layout constants
@@ -228,9 +230,8 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
         icon_reserved_width = icon_size + padding + 8
         max_temp_width = epd.height - padding - icon_reserved_width
 
-        # Build temperature string
-        # When current temp equals or exceeds max, show only current temp
-        # Otherwise show both with spacing based on digit count
+        # Build temperature string: show only current when it matches max,
+        # use compact format for double-digit temps, spaced format otherwise
         if temperature >= temperature_max:
             temp_text = f"{temperature}{TEMP_SYMBOL}"
         elif temperature >= 10 or temperature_max >= 10:
@@ -290,6 +291,7 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
     except Exception as e:
         log_message(f"Error in display: {type(e).__name__}: {e}")
         epd.sleep()
+
 
 def main():
     if not API_KEY:
