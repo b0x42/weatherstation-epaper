@@ -209,8 +209,9 @@ weatherstation-epaper/
 ├── requirements.txt       # Python dependencies
 ├── .env                   # Your configuration (create from .env.example)
 ├── .env.example           # Configuration template
-├── icons.json             # Weather icon unicode mapping
-├── weathericons.ttf       # Weather icons font
+├── icons/                 # Weather icon assets
+│   ├── icons.json         # Weather icon unicode mapping
+│   └── weathericons.ttf   # Weather icons font
 ├── tests/                 # Test files
 └── venv/                  # Python virtual environment (created during setup)
 ```

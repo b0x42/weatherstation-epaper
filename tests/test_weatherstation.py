@@ -17,12 +17,12 @@ from weatherstation import wrap_text, get_line_height, fit_summary_to_lines
 
 
 def test_icons_json_exists():
-    icons_path = os.path.join(PROJECT_ROOT, "icons.json")
+    icons_path = os.path.join(PROJECT_ROOT, "icons", "icons.json")
     assert os.path.exists(icons_path)
 
 
 def test_icons_json_valid():
-    icons_path = os.path.join(PROJECT_ROOT, "icons.json")
+    icons_path = os.path.join(PROJECT_ROOT, "icons", "icons.json")
     with open(icons_path, "r") as f:
         icons = json.load(f)
 
@@ -32,7 +32,7 @@ def test_icons_json_valid():
 
 
 def test_weather_icons_font_exists():
-    font_path = os.path.join(PROJECT_ROOT, "weathericons.ttf")
+    font_path = os.path.join(PROJECT_ROOT, "icons", "weathericons.ttf")
     assert os.path.isfile(font_path)
 
 
