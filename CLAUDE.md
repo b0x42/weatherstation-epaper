@@ -60,6 +60,40 @@ Both displays share the same layout (104x212 landscape).
 - All config via environment variables (see `.env.example`)
 - Weather icons use font glyphs, not PNG files
 
+### Icon Positioning with Precise Padding
+
+Icon fonts have invisible whitespace around the visible glyph. Using `font.getmetrics()` alone gives imprecise positioning because it includes this whitespace. To get precise pixel-perfect padding:
+
+**Use `getbbox()` instead of `getmetrics()`:**
+
+```python
+# Get actual bounding box of the visible glyph (excludes font whitespace)
+icon_bbox = font_icon.getbbox(icon_char)
+# Returns (left, top, right, bottom) of the actual visible pixels
+
+icon_actual_width = icon_bbox[2] - icon_bbox[0]   # right - left
+icon_actual_height = icon_bbox[3] - icon_bbox[1]  # bottom - top
+icon_left_whitespace = icon_bbox[0]   # invisible space on left
+icon_top_whitespace = icon_bbox[1]    # invisible space above
+
+# Position so visible icon has 5px padding from right edge
+icon_x = display_width - padding - icon_actual_width - icon_left_whitespace
+
+# Position so visible icon has 5px padding from top edge
+icon_y = padding - icon_top_whitespace
+```
+
+**Example values for fog icon at size 44:**
+```
+icon_bbox: (0, 10, 39, 38)
+icon_actual_width: 39px
+icon_top_whitespace: 10px (glyph starts 10px below font baseline)
+```
+
+**Key insight:** Font metrics (`getmetrics()`) return the font's design dimensions, while `getbbox()` returns the actual visible pixel bounds for a specific character. This difference is significant for icon fonts.
+
+**Note:** Font rendering may differ slightly between emulator (macOS) and hardware (Raspberry Pi) due to different font rendering engines. Always verify final layout on actual hardware.
+
 ## Common Tasks
 - Update icon mappings: Edit `icons.json`
 - Change display layout: Modify `display_weather()` in `weatherstation.py`

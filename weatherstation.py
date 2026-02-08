@@ -156,10 +156,15 @@ def wrap_text(text, font, max_width, max_lines):
     return lines
 
 
-def get_line_height(font):
-    """Calculates line height with spacing based on font metrics."""
+def get_line_height(font, spacing=2):
+    """Calculates line height with spacing based on font metrics.
+
+    Args:
+        font: PIL ImageFont object
+        spacing: Extra pixels between lines (default 2)
+    """
     ascent, descent = font.getmetrics()
-    return ascent + descent + 2  # Add 2 pixels for line spacing
+    return ascent + descent + spacing
 
 
 def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_size):
@@ -207,6 +212,7 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
         max_summary_lines = layout['MAX_SUMMARY_LINES']
         icon_size = layout['ICON_SIZE']
         temp_height_ratio = layout['TEMP_HEIGHT_RATIO']
+        line_spacing = layout['LINE_SPACING']
 
         # Load fonts
         available_width = epd.height - (2 * padding)  # epd.height is width in landscape
@@ -215,12 +221,11 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
             font_size_summary_max, font_size_summary_min
         )
 
-        # Calculate text position (55% of height for temperature area)
+        # Temperature area occupies top portion of display
         temp_height = int(epd.width * temp_height_ratio)
 
-        # Calculate available width for temperature text
-        # Reserve space for icon: icon_size + padding + extra offset (5) + gap (3)
-        icon_reserved_width = icon_size + padding + 5 + 3
+        # Reserve space for icon on the right side
+        icon_reserved_width = icon_size + padding + 8
         max_temp_width = epd.height - padding - icon_reserved_width
 
         # Build temperature string
@@ -240,10 +245,8 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
             temp_font_size -= 1
             temp_font = ImageFont.truetype(FONT_PATH, temp_font_size)
 
-        # Make icon slightly larger than temperature for better visual prominence
-        # +6px offset: makes icon more noticeable while maintaining proportional scaling
-        # (e.g., temp 32px → icon 38px, temp 20px → icon 26px)
-        actual_icon_size = temp_font_size + 6
+        # Make icon same size as temperature for aligned padding
+        actual_icon_size = temp_font_size
         font_icon = ImageFont.truetype(ICON_FONT_PATH, actual_icon_size)
 
         # Draw temperature with fitted font
@@ -253,17 +256,21 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
             draw_black.text((padding, padding), temp_text, font=temp_font, fill=0)  # Black
 
         # Weather summary in lower area with text wrapping
-        line_height = get_line_height(font_summary)
+        line_height = get_line_height(font_summary, line_spacing)
         for i, line in enumerate(summary_lines):
             y_position = temp_height + (i * line_height)
             draw_black.text((padding, y_position), line, font=font_summary, fill=0)
 
-        # Display weather icon using font (align with temperature baseline)
-        # Extra -5 to compensate for font's built-in right spacing
-        icon_x = epd.height - padding - actual_icon_size - 5
-        temp_ascent = temp_font.getmetrics()[0]
-        icon_ascent = font_icon.getmetrics()[0]
-        icon_y = padding + (temp_ascent - icon_ascent) // 2
+        # Position icon using actual glyph bounds (getbbox excludes font whitespace)
+        icon_bbox = font_icon.getbbox(icon_char)
+        icon_actual_width = icon_bbox[2] - icon_bbox[0]
+        icon_left_whitespace = icon_bbox[0]
+        icon_top_whitespace = icon_bbox[1]
+
+        # Align visible icon with padding from right and top edges
+        icon_x = epd.height - padding - icon_actual_width - icon_left_whitespace
+        icon_y = padding - icon_top_whitespace
+
         draw_black.text((icon_x, icon_y), icon_char, font=font_icon, fill=0)
 
         # Rotate image for display orientation
