@@ -94,11 +94,12 @@ def get_layout_config():
         to implement resolution-based scaling logic.
     """
     return {
-        'PADDING': 10,
-        'FONT_SIZE_TEMPERATURE': 32,
-        'FONT_SIZE_SUMMARY_MAX': 18,
-        'FONT_SIZE_SUMMARY_MIN': 12,
+        'PADDING': 5,
+        'FONT_SIZE_TEMPERATURE': 30,
+        'FONT_SIZE_SUMMARY_MAX': 16,
+        'FONT_SIZE_SUMMARY_MIN': 10,
         'ICON_SIZE': 48,
-        'MAX_SUMMARY_LINES': 2,
-        'TEMP_HEIGHT_RATIO': 0.55,
+        'MAX_SUMMARY_LINES': 3,
+        'TEMP_HEIGHT_RATIO': 0.50,
+        'LINE_SPACING': 4,  # Extra spacing between summary lines
     }

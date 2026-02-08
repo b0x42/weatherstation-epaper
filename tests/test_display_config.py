@@ -78,13 +78,14 @@ def test_layout_config_constants():
     """Test layout config returns correct constants."""
     layout = get_layout_config()
 
-    assert layout['PADDING'] == 10
-    assert layout['FONT_SIZE_TEMPERATURE'] == 32
-    assert layout['FONT_SIZE_SUMMARY_MAX'] == 18
-    assert layout['FONT_SIZE_SUMMARY_MIN'] == 12
+    assert layout['PADDING'] == 5
+    assert layout['FONT_SIZE_TEMPERATURE'] == 30
+    assert layout['FONT_SIZE_SUMMARY_MAX'] == 16
+    assert layout['FONT_SIZE_SUMMARY_MIN'] == 10
     assert layout['ICON_SIZE'] == 48
-    assert layout['MAX_SUMMARY_LINES'] == 2
-    assert layout['TEMP_HEIGHT_RATIO'] == 0.55
+    assert layout['MAX_SUMMARY_LINES'] == 3
+    assert layout['TEMP_HEIGHT_RATIO'] == 0.50
+    assert layout['LINE_SPACING'] == 4
 
 
 def test_both_displays_same_resolution():
