@@ -6,12 +6,16 @@ from datetime import datetime
 from pathlib import Path
 
 import pirateweather
+from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont
 
 from display_config import get_display_config, get_layout_config, load_display_module
 
 # Directory containing this script (for finding package data files)
 SCRIPT_DIR = Path(__file__).parent
+
+# Load environment variables from .env file
+load_dotenv(SCRIPT_DIR / ".env")
 
 # Configuration (from environment variables)
 API_KEY = os.environ.get("PIRATE_WEATHER_API_KEY")
@@ -61,7 +65,7 @@ class WeatherStation:
         # Load display configuration
         self.display_model = DISPLAY_MODEL
         self.display_config = get_display_config(self.display_model)
-        self.layout = get_layout_config()
+        self.layout = get_layout_config(self.display_model)
 
         # Dynamically load display driver
         epd_class = load_display_module(self.display_model)
@@ -71,16 +75,17 @@ class WeatherStation:
         self.has_red_layer = self.display_config['has_red']
 
     def should_update_display(self, temperature, temperature_max, summary):
-        """Check if weather data has changed."""
+        """Check if weather data has changed and update cached values if so."""
         current = (temperature, temperature_max, summary)
         previous = (self.last_temperature, self.last_temperature_max, self.last_summary)
 
-        if current != previous:
-            self.last_temperature = temperature
-            self.last_temperature_max = temperature_max
-            self.last_summary = summary
-            return True
-        return False
+        if current == previous:
+            return False
+
+        self.last_temperature = temperature
+        self.last_temperature_max = temperature_max
+        self.last_summary = summary
+        return True
 
     def run(self):
         """Main loop."""
@@ -176,7 +181,7 @@ def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_si
 
     Returns (font, lines) tuple.
     """
-    words = text.split()
+    word_count = len(text.split())
 
     for size in range(max_size, min_size - 1, -1):
         font = ImageFont.truetype(font_path, size)
@@ -184,7 +189,7 @@ def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_si
 
         # Check if all words fit (no truncation)
         words_in_lines = sum(len(line.split()) for line in lines)
-        if words_in_lines >= len(words):
+        if words_in_lines >= word_count:
             return font, lines
 
     # At minimum size, return whatever fits
@@ -230,8 +235,10 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
         icon_reserved_width = icon_size + padding + 8
         max_temp_width = epd.height - padding - icon_reserved_width
 
-        # Build temperature string: show only current when it matches max,
-        # use compact format for double-digit temps, spaced format otherwise
+        # Build temperature string based on display needs:
+        # - Show only current temp when it matches max
+        # - Use compact format for double-digit temps to fit display width
+        # - Use spaced format for single-digit temps for better readability
         if temperature >= temperature_max:
             temp_text = f"{temperature}{TEMP_SYMBOL}"
         elif temperature >= 10 or temperature_max >= 10:
@@ -287,9 +294,9 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
             epd.display(epd.getbuffer(image_black))
 
         log_message("Display updated successfully.")
-        epd.sleep()
     except Exception as e:
         log_message(f"Error in display: {type(e).__name__}: {e}")
+    finally:
         epd.sleep()
 
 

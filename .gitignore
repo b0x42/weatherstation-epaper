@@ -5,3 +5,5 @@ __pycache__/
 .claude/
 venv/
 .venv/
+EPD-Emulator/
+weatherstation.log

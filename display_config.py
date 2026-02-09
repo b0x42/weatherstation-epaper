@@ -4,15 +4,18 @@ Provides a registry of supported displays, dynamic module loading,
 and layout configuration for the weather station.
 """
 
+import os
+
 # Display Registry - Maps model names to their specifications
 _DISPLAY_REGISTRY = {
+    # 104x212 resolution displays
     'epd2in13bc': {
         'width': 104,
         'height': 212,
         'colors': ['black', 'white', 'red'],
         'has_red': True,
         'features': [],
-        'description': 'Bi-color (black/red) tri-color display',
+        'description': '2.13" Bi-color (black/red)',
     },
     'epd2in13d': {
         'width': 104,
@@ -20,7 +23,64 @@ _DISPLAY_REGISTRY = {
         'colors': ['black', 'white'],
         'has_red': False,
         'features': ['partial_update'],
-        'description': 'Monochrome (black/white) with partial update support',
+        'description': '2.13" Monochrome with partial update',
+    },
+    # 122x250 resolution displays
+    'epd2in13': {
+        'width': 122,
+        'height': 250,
+        'colors': ['black', 'white'],
+        'has_red': False,
+        'features': [],
+        'description': '2.13" Monochrome (original)',
+    },
+    'epd2in13_V2': {
+        'width': 122,
+        'height': 250,
+        'colors': ['black', 'white'],
+        'has_red': False,
+        'features': ['partial_update'],
+        'description': '2.13" Monochrome V2',
+    },
+    'epd2in13_V3': {
+        'width': 122,
+        'height': 250,
+        'colors': ['black', 'white'],
+        'has_red': False,
+        'features': ['partial_update'],
+        'description': '2.13" Monochrome V3',
+    },
+    'epd2in13_V4': {
+        'width': 122,
+        'height': 250,
+        'colors': ['black', 'white'],
+        'has_red': False,
+        'features': ['partial_update', 'fast_refresh'],
+        'description': '2.13" Monochrome V4 with fast refresh',
+    },
+    'epd2in13b_V3': {
+        'width': 122,
+        'height': 250,
+        'colors': ['black', 'white', 'red'],
+        'has_red': True,
+        'features': [],
+        'description': '2.13" Bi-color V3 (black/red)',
+    },
+    'epd2in13b_V4': {
+        'width': 122,
+        'height': 250,
+        'colors': ['black', 'white', 'red'],
+        'has_red': True,
+        'features': [],
+        'description': '2.13" Bi-color V4 (black/red)',
+    },
+    'epd2in13g': {
+        'width': 122,
+        'height': 250,
+        'colors': ['black', 'white', 'yellow', 'red'],
+        'has_red': True,
+        'features': ['4_color'],
+        'description': '2.13" 4-color (black/white/yellow/red)',
     },
 }
 
@@ -45,11 +105,14 @@ def _validate_model(model_name):
 def load_display_module(model_name):
     """Dynamically import and return EPD class for specified model.
 
+    Checks USE_EMULATOR environment variable to decide between
+    hardware and emulator backend.
+
     Args:
         model_name: Display model identifier (e.g., 'epd2in13bc')
 
     Returns:
-        EPD class from the waveshare_epd module
+        EPD class (hardware or emulator adapter)
 
     Raises:
         ValueError: If model_name is not in registry
@@ -57,11 +120,51 @@ def load_display_module(model_name):
     """
     _validate_model(model_name)
 
-    try:
-        module = __import__(f'waveshare_epd.{model_name}', fromlist=[model_name])
-        return getattr(module, 'EPD')
-    except ImportError as e:
-        raise ImportError(f"Failed to import display module for {model_name}: {e}") from e
+    # Check if emulator mode is enabled
+    use_emulator = os.environ.get("USE_EMULATOR", "false").lower() == "true"
+
+    if use_emulator:
+        # Load emulator adapter
+        try:
+            from emulator_adapter import EmulatorAdapter, EMULATOR_AVAILABLE
+
+            if not EMULATOR_AVAILABLE:
+                raise ImportError(
+                    "USE_EMULATOR=true but EPD-Emulator not installed. "
+                    "Install from: https://github.com/benjaminburzan/EPD-Emulator"
+                )
+
+            # Get display config to determine if color is supported
+            config = _DISPLAY_REGISTRY[model_name]
+            use_color = config['has_red']
+
+            # Check if Tkinter mode is enabled (default: False for Flask/browser mode)
+            use_tkinter = os.environ.get("USE_TKINTER", "false").lower() == "true"
+
+            # Return factory function that creates adapter
+            # Using default arguments to capture current values (closure)
+            def create_adapter(model=model_name, color=use_color, tkinter=use_tkinter):
+                return EmulatorAdapter(
+                    model_name=model,
+                    use_color=color,
+                    use_tkinter=tkinter,
+                    update_interval=1
+                )
+            return create_adapter
+
+        except ImportError as e:
+            raise ImportError(
+                f"Failed to load emulator for {model_name}: {e}"
+            ) from e
+    else:
+        # Load hardware driver (existing behavior)
+        try:
+            module = __import__(f'waveshare_epd.{model_name}', fromlist=[model_name])
+            return getattr(module, 'EPD')
+        except ImportError as e:
+            raise ImportError(
+                f"Failed to import display module for {model_name}: {e}"
+            ) from e
 
 
 def get_display_config(model_name):
@@ -80,19 +183,35 @@ def get_display_config(model_name):
     return _DISPLAY_REGISTRY[model_name]
 
 
-def get_layout_config():
-    """Get layout constants for 104x212 displays.
+def get_layout_config(model_name=None):
+    """Get layout constants for the specified display model.
 
-    Returns fixed layout configuration suitable for 104x212 resolution.
-    Both epd2in13bc and epd2in13d share these layout constants.
+    Args:
+        model_name: Display model identifier. If None, returns 104x212 layout.
 
     Returns:
         Dictionary with layout constants (padding, font sizes, etc.)
-
-    Note:
-        When adding 122x250 displays in Phase 2, this function will need
-        to implement resolution-based scaling logic.
     """
+    # Determine resolution from model
+    if model_name and model_name in _DISPLAY_REGISTRY:
+        width = _DISPLAY_REGISTRY[model_name]['width']
+    else:
+        width = 104  # Default to smaller resolution
+
+    if width == 122:
+        # Layout for 122x250 displays (larger)
+        return {
+            'PADDING': 6,
+            'FONT_SIZE_TEMPERATURE': 36,
+            'FONT_SIZE_SUMMARY_MAX': 18,
+            'FONT_SIZE_SUMMARY_MIN': 12,
+            'ICON_SIZE': 56,
+            'MAX_SUMMARY_LINES': 3,
+            'TEMP_HEIGHT_RATIO': 0.48,
+            'LINE_SPACING': 5,
+        }
+
+    # Layout for 104x212 displays (original)
     return {
         'PADDING': 5,
         'FONT_SIZE_TEMPERATURE': 30,

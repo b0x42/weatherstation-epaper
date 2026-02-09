@@ -15,6 +15,7 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Supported Display Models](#supported-display-models)
+- [Development & Testing](#development--testing)
 - [Troubleshooting](#troubleshooting)
 - [File Structure](#file-structure)
 - [Credits](#credits)
@@ -37,14 +38,13 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 
 ### Hardware
 - Raspberry Pi (Zero W, 3, 4, or 5)
-- One of these Waveshare 2.13" e-Paper displays (104x212 resolution):
-  - [2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) - bi-color (black/red) - `epd2in13bc` (default)
-  - [2.13" e-Paper HAT (D)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)) - monochrome (black/white) - `epd2in13d`
+- Any Waveshare 2.13" e-Paper display (see [Supported Display Models](#supported-display-models))
 - Internet connection
 
 ### Software
 - Free [Pirate Weather API key](https://pirate-weather.apiable.io/products/weather-data/plans)
 - Raspberry Pi OS or Debian-based Linux distro
+- DejaVu Sans Bold font (pre-installed on Raspberry Pi OS)
 
 ---
 
@@ -80,7 +80,7 @@ git clone https://github.com/benjaminburzan/weatherstation-epaper.git
 cd weatherstation-epaper
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install .
 pip install "git+https://github.com/waveshareteam/e-Paper.git#subdirectory=RaspberryPi_JetsonNano/python"
 ```
 
@@ -106,10 +106,9 @@ All settings are configured via environment variables in your `.env` file.
 | `LONGITUDE` | Your location's longitude | 13.4050 (Berlin) |
 | `LANGUAGE` | Weather summary language ([see options](https://pirateweather.net/en/latest/API/#language)) | de |
 | `UNITS` | `si` for Celsius, `us` for Fahrenheit | si |
-| `DISPLAY_MODEL` | Display model: `epd2in13bc` (bi-color) or `epd2in13d` (monochrome) | epd2in13bc |
+| `DISPLAY_MODEL` | Display model (see [Supported Display Models](#supported-display-models)) | epd2in13bc |
 | `FLIP_DISPLAY` | Set to `true` to rotate display 180° | false |
 | `UPDATE_INTERVAL_SECONDS` | How often to refresh (1800 = 30 min) | 1800 |
-| `FONT_PATH` | TrueType font file | `/usr/share/fonts/.../DejaVuSans-Bold.ttf` |
 
 ---
 
@@ -148,25 +147,97 @@ tail -f /var/log/weatherstation.log
 
 ## Supported Display Models
 
-### Currently Supported (104×212 resolution)
+All Waveshare 2.13" e-Paper displays are supported:
 
-| Model | Type | Colors | Model ID | Status |
-|-------|------|--------|----------|--------|
-| [2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) | Bi-color | Black/Red | `epd2in13bc` | ✅ Default |
-| [2.13" e-Paper HAT (D)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)) | Monochrome | Black/White | `epd2in13d` | ✅ Supported |
+### 104×212 Resolution
 
-**Key Features:**
-- Both displays share the same resolution (104×212) and layout
-- `epd2in13bc`: Red color activates when current temp ≥ max temp
-- `epd2in13d`: Partial update support, all text renders in black
+| Model | Type | Colors | Model ID |
+|-------|------|--------|----------|
+| [2.13" e-Paper HAT (B)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) | Bi-color | Black/Red | `epd2in13bc` (default) |
+| [2.13" e-Paper HAT (D)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)_Manual) | Monochrome | Black/White | `epd2in13d` |
 
-### Future Support (Planned - Phase 2)
+### 122×250 Resolution
 
-Support for 122×250 resolution displays is planned:
-- `epd2in13_V4` - Monochrome with fast refresh
-- `epd2in13b_V4` - Bi-color (black/red)
-- `epd2in13g` - 4-color (black/white/yellow/red)
-- Additional V2, V3 variants
+| Model | Type | Colors | Model ID |
+|-------|------|--------|----------|
+| [2.13" e-Paper HAT](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual) | Monochrome | Black/White | `epd2in13` |
+| [2.13" e-Paper HAT V2](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual) | Monochrome | Black/White | `epd2in13_V2` |
+| [2.13" e-Paper HAT V3](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual) | Monochrome | Black/White | `epd2in13_V3` |
+| [2.13" e-Paper HAT V4](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual) | Monochrome | Black/White | `epd2in13_V4` |
+| [2.13" e-Paper HAT (B) V3](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) | Bi-color | Black/Red | `epd2in13b_V3` |
+| [2.13" e-Paper HAT (B) V4](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual) | Bi-color | Black/Red | `epd2in13b_V4` |
+| [2.13" e-Paper HAT (G)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(G)_Manual) | 4-color | Black/White/Yellow/Red | `epd2in13g` |
+
+**Features:**
+- Bi-color displays: Red activates when current temp ≥ max temp
+- Layout automatically scales based on display resolution
+- All displays work with both hardware and emulator
+
+---
+
+## Development & Testing
+
+### Development Configuration
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `USE_EMULATOR` | Use EPD-Emulator instead of hardware | false |
+| `USE_TKINTER` | Use Tkinter window instead of browser (only with emulator) | false |
+| `LOG_FILE_PATH` | Path to log file (use local path on macOS) | `/var/log/weatherstation.log` |
+| `FONT_PATH` | TrueType font file (see [macOS font setup](#macos-install-font)) | `/usr/share/fonts/.../DejaVuSans-Bold.ttf` |
+
+### Quick Setup (macOS/Linux)
+
+```bash
+# 1. Clone and setup (includes EPD-Emulator and pytest)
+git clone https://github.com/benjaminburzan/weatherstation-epaper.git
+cd weatherstation-epaper
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+
+# 2. Setup environment
+cp .env.example .env
+# Edit .env and add your PIRATE_WEATHER_API_KEY
+
+# 3. Run with emulator (opens in browser at http://localhost:5000)
+USE_EMULATOR=true python weatherstation.py
+
+# Or use Tkinter window instead of browser
+USE_EMULATOR=true USE_TKINTER=true python weatherstation.py
+```
+
+### macOS: Install Font
+
+```bash
+# DejaVu Sans is required (pre-installed on Raspberry Pi OS)
+brew install font-dejavu
+
+# Add to .env
+echo "FONT_PATH=~/Library/Fonts/DejaVuSans-Bold.ttf" >> .env
+```
+
+### Test Different Display Models
+
+```bash
+# Bi-color (black/red) - opens in browser
+USE_EMULATOR=true DISPLAY_MODEL=epd2in13bc python weatherstation.py
+
+# Monochrome (black/white) - opens in browser
+USE_EMULATOR=true DISPLAY_MODEL=epd2in13d python weatherstation.py
+```
+
+**Note:** The emulator uses Flask and serves at http://localhost:5000 by default. Set `USE_TKINTER=true` if you prefer a native window.
+
+### Running Tests
+
+```bash
+python -m pytest tests/ -v
+```
+
+### More Info
+
+For architecture details and design decisions, see [EMULATOR_INTEGRATION.md](EMULATOR_INTEGRATION.md)
 
 ---
 
@@ -205,6 +276,7 @@ sudo chmod 666 /var/log/weatherstation.log
 weatherstation-epaper/
 ├── weatherstation.py      # Main application
 ├── display_config.py      # Display configuration and module loading
+├── emulator_adapter.py    # EPD-Emulator adapter for testing without hardware
 ├── weatherstation.service # Systemd service file
 ├── requirements.txt       # Python dependencies
 ├── .env                   # Your configuration (create from .env.example)
@@ -213,6 +285,9 @@ weatherstation-epaper/
 │   ├── icons.json         # Weather icon unicode mapping
 │   └── weathericons.ttf   # Weather icons font
 ├── tests/                 # Test files
+│   ├── test_weatherstation.py
+│   ├── test_display_config.py
+│   └── test_emulator_integration.py  # Emulator integration tests
 └── venv/                  # Python virtual environment (created during setup)
 ```
 
