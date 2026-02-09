@@ -181,7 +181,7 @@ All Waveshare 2.13" e-Paper displays are supported:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `USE_EMULATOR` | Use EPD-Emulator instead of hardware | false |
+| `USE_EMULATOR` | Use E-Paper-Emulator instead of hardware | false |
 | `USE_TKINTER` | Use Tkinter window instead of browser (only with emulator) | false |
 | `LOG_FILE_PATH` | Path to log file (use local path on macOS) | `/var/log/weatherstation.log` |
 | `FONT_PATH` | TrueType font file (see [macOS font setup](#macos-install-font)) | `/usr/share/fonts/.../DejaVuSans-Bold.ttf` |
@@ -189,7 +189,7 @@ All Waveshare 2.13" e-Paper displays are supported:
 ### Quick Setup (macOS/Linux)
 
 ```bash
-# 1. Clone and setup (includes EPD-Emulator and pytest)
+# 1. Clone and setup (includes E-Paper-Emulator and pytest)
 git clone https://github.com/benjaminburzan/weatherstation-epaper.git
 cd weatherstation-epaper
 python3 -m venv .venv
@@ -276,7 +276,7 @@ sudo chmod 666 /var/log/weatherstation.log
 weatherstation-epaper/
 ├── weatherstation.py      # Main application
 ├── display_config.py      # Display configuration and module loading
-├── emulator_adapter.py    # EPD-Emulator adapter for testing without hardware
+├── emulator_adapter.py    # E-Paper-Emulator adapter for testing without hardware
 ├── weatherstation.service # Systemd service file
 ├── requirements.txt       # Python dependencies
 ├── .env                   # Your configuration (create from .env.example)

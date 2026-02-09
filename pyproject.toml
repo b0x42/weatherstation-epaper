@@ -21,7 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
-    "EPD-Emulator @ git+https://github.com/benjaminburzan/EPD-Emulator.git",
+    "epaper-emulator @ git+https://github.com/benjaminburzan/E-Paper-Emulator.git",
 ]
 
 [project.scripts]

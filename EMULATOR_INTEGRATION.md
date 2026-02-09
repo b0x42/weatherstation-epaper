@@ -1,4 +1,4 @@
-# EPD-Emulator Integration - Technical Documentation
+# E-Paper-Emulator Integration - Technical Documentation
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@
 
 ## Executive Summary
 
-This document describes the integration of [EPD-Emulator](https://github.com/benjaminburzan/EPD-Emulator) into the weather station project, enabling visual testing of e-Paper display layouts without physical hardware.
+This document describes the integration of [E-Paper-Emulator](https://github.com/benjaminburzan/E-Paper-Emulator) into the weather station project, enabling visual testing of e-Paper display layouts without physical hardware.
 
 **Benefits:**
 - ✅ Visual preview of display layouts in development
@@ -28,7 +28,7 @@ This document describes the integration of [EPD-Emulator](https://github.com/ben
 - ✅ Optional dependency - doesn't affect production
 
 **Implementation:**
-- Adapter pattern wrapping EPD-Emulator with waveshare_epd-compatible interface
+- Adapter pattern wrapping E-Paper-Emulator with waveshare_epd-compatible interface
 - Environment variable toggle (`USE_EMULATOR=true/false`)
 - Zero changes to core weatherstation.py logic
 - Full backward compatibility with hardware mode
@@ -96,12 +96,12 @@ epd.display(buffer_black, buffer_red)
 epd.sleep()
 ```
 
-### EPD-Emulator (Target)
+### E-Paper-Emulator (Target)
 
 ```python
-from epd_emulator import epdemulator
+from epaper_emulator import EPD
 
-epd = epdemulator.EPD(
+epd = EPD(
     config_file="epd2in13",
     use_tkinter=True,
     use_color=True,
@@ -122,9 +122,9 @@ epd.display(buffer)
 
 ### Key Differences
 
-| Feature | Waveshare EPD | EPD-Emulator |
+| Feature | Waveshare EPD | E-Paper-Emulator |
 |---------|---------------|--------------|
-| **Import path** | `waveshare_epd.epd2in13bc` | `epd_emulator.epdemulator` |
+| **Import path** | `waveshare_epd.epd2in13bc` | `epaper_emulator` |
 | **Constructor** | `EPD()` (no params) | `EPD(config_file, use_tkinter, use_color, ...)` |
 | **Model specification** | Module name (`epd2in13bc`) | Config file string (`epd2in13`) |
 | **Clear signature** | `Clear()` (no params) | `Clear(fill_value)` |
@@ -158,7 +158,7 @@ epd.display(buffer)
 │ waveshare   │  │  Emulator       │
 │  Hardware   │  │  Adapter        │
 │ (epd2in13bc)│  │ (wraps          │
-│             │  │  epdemulator)   │
+│             │  │  EPD)           │
 └─────────────┘  └─────────────────┘
 ```
 
@@ -200,7 +200,7 @@ EMULATOR_CONFIG_MAPPING = {
 
 #### 2. EmulatorAdapter Class
 
-Wraps EPD-Emulator with waveshare_epd-compatible interface:
+Wraps E-Paper-Emulator with waveshare_epd-compatible interface:
 
 ```python
 class EmulatorAdapter:
@@ -259,7 +259,7 @@ def load_display_module(model_name):
         from emulator_adapter import EmulatorAdapter, EMULATOR_AVAILABLE
 
         if not EMULATOR_AVAILABLE:
-            raise ImportError("EPD-Emulator not installed...")
+            raise ImportError("E-Paper-Emulator not installed...")
 
         # Get color capability from registry
         config = _DISPLAY_REGISTRY[model_name]
@@ -391,14 +391,14 @@ def test_display_config_loads_emulator():
 │                 │            │                  │
 │ EmulatorAdapter │            │ epd2in13bc.EPD   │
 │   wraps         │            │ epd2in13d.EPD    │
-│ epdemulator.EPD │            │                  │
+│ epaper_emulator.EPD │            │                  │
 └────────┬────────┘            └──────────────────┘
          │
          ▼
 ┌─────────────────┐
-│ EPD-Emulator    │
+│ E-Paper-Emulator    │
 │                 │
-│ epdemulator.EPD │
+│ epaper_emulator.EPD │
 │ (Tkinter/Flask) │
 └─────────────────┘
 ```
@@ -436,8 +436,8 @@ emulator_adapter.py
   │ Translate waveshare API calls
   │ epd.display(*buffers) → _epd.display_frame()
   ▼
-EPD-Emulator
-  │ epdemulator.EPD
+E-Paper-Emulator
+  │ epaper_emulator.EPD
   ▼
 Tkinter Window (Visual Preview)
 ```
@@ -464,7 +464,7 @@ Tkinter Window (Visual Preview)
 
 ### 2. Optional Dependency
 
-**Decision:** Make EPD-Emulator optional, not required
+**Decision:** Make E-Paper-Emulator optional, not required
 
 **Rationale:**
 - Production deployments use physical hardware
@@ -475,11 +475,11 @@ Tkinter Window (Visual Preview)
 **Implementation:**
 ```python
 try:
-    from epd_emulator import epdemulator
+    from epaper_emulator import EPD as EmulatorEPD
     EMULATOR_AVAILABLE = True
 except ImportError:
     EMULATOR_AVAILABLE = False
-    epdemulator = None
+    EmulatorEPD = None
 ```
 
 ---
@@ -578,8 +578,8 @@ EMULATOR_CONFIG_MAPPING = {
 ```python
 # Emulator not installed
 raise ImportError(
-    "EPD-Emulator not installed. "
-    "Install from: https://github.com/benjaminburzan/EPD-Emulator"
+    "E-Paper-Emulator not installed. "
+    "Install from: https://github.com/benjaminburzan/E-Paper-Emulator"
 )
 
 # Invalid model
@@ -655,8 +655,8 @@ except ValueError as e:
 
 ```bash
 # Clone and setup emulator
-git clone https://github.com/benjaminburzan/EPD-Emulator.git
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/EPD-Emulator"
+git clone https://github.com/benjaminburzan/E-Paper-Emulator.git
+export PYTHONPATH="${PYTHONPATH}:$(pwd)/E-Paper-Emulator"
 
 # Run with emulator (opens Tkinter window)
 USE_EMULATOR=true DISPLAY_MODEL=epd2in13bc python weatherstation.py
@@ -679,7 +679,7 @@ pytest tests/test_emulator_integration.py -v
 ```
 
 **CI Environment:**
-- EPD-Emulator not installed in CI (optional dependency)
+- E-Paper-Emulator not installed in CI (optional dependency)
 - Emulator tests automatically skipped
 - Standard tests use mocks (existing behavior)
 
@@ -847,7 +847,7 @@ stats.print_stats(20)
 
 ### Identified Risks & Mitigations
 
-#### 1. EPD-Emulator Interface Mismatch
+#### 1. E-Paper-Emulator Interface Mismatch
 
 **Risk:** Emulator may not support all features needed
 
@@ -883,7 +883,7 @@ stats.print_stats(20)
 
 #### 3. Dependency Installation Issues
 
-**Risk:** Users may have trouble installing EPD-Emulator
+**Risk:** Users may have trouble installing E-Paper-Emulator
 
 **Likelihood:** Medium
 **Impact:** Low
@@ -989,7 +989,7 @@ Implementation is successful when all criteria are met:
 
 ### Constraints Satisfied
 
-- ✅ EPD-Emulator as optional dependency
+- ✅ E-Paper-Emulator as optional dependency
 - ✅ No changes to weatherstation.py display logic
 - ✅ Maintain backward compatibility with hardware
 - ✅ Simple environment variable toggle
@@ -1012,7 +1012,7 @@ Implementation is successful when all criteria are met:
 
 ## Conclusion
 
-The EPD-Emulator integration successfully enables hardware-free development and testing while maintaining full backward compatibility. The adapter pattern provides clean separation of concerns and makes future enhancements straightforward.
+The E-Paper-Emulator integration successfully enables hardware-free development and testing while maintaining full backward compatibility. The adapter pattern provides clean separation of concerns and makes future enhancements straightforward.
 
 **Key Achievements:**
 - Zero changes to core weatherstation.py
@@ -1022,7 +1022,7 @@ The EPD-Emulator integration successfully enables hardware-free development and 
 - Production-ready implementation
 
 **Next Steps:**
-1. Test with actual EPD-Emulator installation
+1. Test with actual E-Paper-Emulator installation
 2. Validate visual output matches expectations
 3. Iterate on bi-color compositing if needed
 4. Consider Phase 2 enhancements based on usage
@@ -1034,7 +1034,7 @@ The EPD-Emulator integration successfully enables hardware-free development and 
 ### Critical Files
 
 **Created:**
-- `emulator_adapter.py` - Adapter wrapping EPD-Emulator
+- `emulator_adapter.py` - Adapter wrapping E-Paper-Emulator
 - `tests/test_emulator_integration.py` - Integration tests
 
 **Modified:**
@@ -1045,7 +1045,7 @@ The EPD-Emulator integration successfully enables hardware-free development and 
 - `tests/test_weatherstation.py` - Conditional mocking support
 
 **External Dependencies:**
-- EPD-Emulator (optional) - https://github.com/benjaminburzan/EPD-Emulator
+- E-Paper-Emulator (optional) - https://github.com/benjaminburzan/E-Paper-Emulator
 
 ### Version History
 

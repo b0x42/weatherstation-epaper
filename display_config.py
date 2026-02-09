@@ -130,8 +130,8 @@ def load_display_module(model_name):
 
             if not EMULATOR_AVAILABLE:
                 raise ImportError(
-                    "USE_EMULATOR=true but EPD-Emulator not installed. "
-                    "Install from: https://github.com/benjaminburzan/EPD-Emulator"
+                    "USE_EMULATOR=true but E-Paper-Emulator not installed. "
+                    "Install from: https://github.com/benjaminburzan/E-Paper-Emulator"
                 )
 
             # Get display config to determine if color is supported

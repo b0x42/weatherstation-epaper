@@ -1,6 +1,6 @@
-"""Integration tests for EPD-Emulator adapter.
+"""Integration tests for E-Paper-Emulator adapter.
 
-These tests require EPD-Emulator to be installed.
+These tests require E-Paper-Emulator to be installed.
 Run with: USE_EMULATOR=true pytest tests/test_emulator_integration.py
 """
 import os
@@ -18,7 +18,7 @@ pytestmark = pytest.mark.skipif(
 try:
     from emulator_adapter import EmulatorAdapter, EMULATOR_AVAILABLE
     if not EMULATOR_AVAILABLE:
-        pytest.skip("EPD-Emulator not installed", allow_module_level=True)
+        pytest.skip("E-Paper-Emulator not installed", allow_module_level=True)
 except ImportError:
     pytest.skip("emulator_adapter not available", allow_module_level=True)
 

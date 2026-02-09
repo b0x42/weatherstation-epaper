@@ -2,7 +2,7 @@
 
 ## Project Context
 
-Raspberry Pi weather station displaying current weather on Waveshare 2.13" e-Paper displays. Fetches data from Pirate Weather API, renders with Pillow, outputs to hardware or EPD-Emulator. Python >=3.10.
+Raspberry Pi weather station displaying current weather on Waveshare 2.13" e-Paper displays. Fetches data from Pirate Weather API, renders with Pillow, outputs to hardware or E-Paper-Emulator. Python >=3.10.
 
 ## Architecture
 

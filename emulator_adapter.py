@@ -1,17 +1,16 @@
-"""Adapter to make EPD-Emulator compatible with waveshare_epd interface."""
+"""Adapter to make E-Paper-Emulator compatible with waveshare_epd interface."""
 
 from PIL import Image, ImageChops
 
 try:
-    from epd_emulator import epdemulator
+    from epaper_emulator import EPD as EmulatorEPD
     EMULATOR_AVAILABLE = True
 except ImportError:
     EMULATOR_AVAILABLE = False
-    epdemulator = None
+    EmulatorEPD = None
 
 
 # Mapping from waveshare model names to emulator config files
-# EPD-Emulator only has: epd2in13 (122x250), epd2in13bc (104x212), epd2in13v2 (122x250)
 EMULATOR_CONFIG_MAPPING = {
     # 104x212 resolution displays
     'epd2in13bc': 'epd2in13bc',   # Bi-color (black/red)
@@ -41,7 +40,7 @@ DISPLAY_RESOLUTION = {
 
 
 class EmulatorAdapter:
-    """Adapter to make EPD-Emulator compatible with waveshare_epd interface.
+    """Adapter to make E-Paper-Emulator compatible with waveshare_epd interface.
 
     Args:
         model_name: Waveshare model name (e.g., 'epd2in13bc')
@@ -54,8 +53,8 @@ class EmulatorAdapter:
                  update_interval=1):
         if not EMULATOR_AVAILABLE:
             raise ImportError(
-                "EPD-Emulator not installed. "
-                "Install from: https://github.com/benjaminburzan/EPD-Emulator"
+                "E-Paper-Emulator not installed. "
+                "Install from: https://github.com/benjaminburzan/E-Paper-Emulator"
             )
 
         config_file = EMULATOR_CONFIG_MAPPING.get(model_name)
@@ -66,7 +65,7 @@ class EmulatorAdapter:
             )
 
         # reverse_orientation makes window landscape since weatherstation renders in landscape
-        self._epd = epdemulator.EPD(
+        self._epd = EmulatorEPD(
             config_file=config_file,
             use_tkinter=use_tkinter,
             use_color=use_color,
