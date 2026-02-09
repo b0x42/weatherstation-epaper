@@ -7,7 +7,12 @@ import pytest
 
 # Mock waveshare_epd before importing display_config
 sys.modules['waveshare_epd'] = MagicMock()
-for display_model in ['epd2in13bc', 'epd2in13d']:
+ALL_DISPLAY_MODELS = [
+    'epd2in13bc', 'epd2in13d',  # 104x212
+    'epd2in13', 'epd2in13_V2', 'epd2in13_V3', 'epd2in13_V4',  # 122x250 mono
+    'epd2in13b_V3', 'epd2in13b_V4', 'epd2in13g',  # 122x250 color
+]
+for display_model in ALL_DISPLAY_MODELS:
     mock_module = MagicMock()
     mock_module.EPD = MagicMock()
     sys.modules[f'waveshare_epd.{display_model}'] = mock_module
@@ -23,11 +28,11 @@ from display_config import (
 )
 
 
-def test_display_registry_contains_both_displays():
-    """Test that both 104x212 displays are registered."""
-    assert 'epd2in13bc' in DISPLAY_REGISTRY
-    assert 'epd2in13d' in DISPLAY_REGISTRY
-    assert len(DISPLAY_REGISTRY) == 2
+def test_display_registry_contains_all_displays():
+    """Test that all 2.13" displays are registered."""
+    for model in ALL_DISPLAY_MODELS:
+        assert model in DISPLAY_REGISTRY, f"Missing model: {model}"
+    assert len(DISPLAY_REGISTRY) == 9
 
 
 def test_epd2in13bc_config():
@@ -63,10 +68,19 @@ def test_get_display_config_invalid_model():
 
 def test_load_display_module_valid():
     """Test loading valid display module."""
-    EPDClass = load_display_module('epd2in13bc')
-    assert EPDClass is not None
-    # Verify it's the mocked EPD class
-    assert callable(EPDClass)
+    # Ensure emulator mode is disabled for this test
+    original_value = os.environ.get("USE_EMULATOR")
+    try:
+        os.environ["USE_EMULATOR"] = "false"
+        epd_class = load_display_module('epd2in13bc')
+        assert epd_class is not None
+        # Verify it's the mocked EPD class
+        assert callable(epd_class)
+    finally:
+        if original_value is None:
+            os.environ.pop("USE_EMULATOR", None)
+        else:
+            os.environ["USE_EMULATOR"] = original_value
 
 
 def test_load_display_module_invalid():
@@ -76,9 +90,9 @@ def test_load_display_module_invalid():
     assert 'Unknown display model' in str(exc_info.value)
 
 
-def test_layout_config_constants():
-    """Test layout config returns correct constants."""
-    layout = get_layout_config()
+def test_layout_config_104x212():
+    """Test layout config for 104x212 displays."""
+    layout = get_layout_config('epd2in13bc')
 
     assert layout['PADDING'] == 5
     assert layout['FONT_SIZE_TEMPERATURE'] == 30
@@ -90,13 +104,34 @@ def test_layout_config_constants():
     assert layout['LINE_SPACING'] == 4
 
 
-def test_both_displays_same_resolution():
-    """Test that both supported displays have the same resolution."""
-    bc_config = get_display_config('epd2in13bc')
-    d_config = get_display_config('epd2in13d')
+def test_layout_config_122x250():
+    """Test layout config for 122x250 displays."""
+    layout = get_layout_config('epd2in13_V4')
 
-    assert bc_config['width'] == d_config['width']
-    assert bc_config['height'] == d_config['height']
+    assert layout['PADDING'] == 6
+    assert layout['FONT_SIZE_TEMPERATURE'] == 36
+    assert layout['FONT_SIZE_SUMMARY_MAX'] == 18
+    assert layout['FONT_SIZE_SUMMARY_MIN'] == 12
+    assert layout['ICON_SIZE'] == 56
+    assert layout['MAX_SUMMARY_LINES'] == 3
+    assert layout['TEMP_HEIGHT_RATIO'] == 0.48
+    assert layout['LINE_SPACING'] == 5
+
+
+def test_displays_grouped_by_resolution():
+    """Test that displays are correctly grouped by resolution."""
+    # 104x212 displays
+    for model in ['epd2in13bc', 'epd2in13d']:
+        config = get_display_config(model)
+        assert config['width'] == 104
+        assert config['height'] == 212
+
+    # 122x250 displays
+    for model in ['epd2in13', 'epd2in13_V2', 'epd2in13_V3', 'epd2in13_V4',
+                  'epd2in13b_V3', 'epd2in13b_V4', 'epd2in13g']:
+        config = get_display_config(model)
+        assert config['width'] == 122
+        assert config['height'] == 250
 
 
 def test_color_capabilities_differ():

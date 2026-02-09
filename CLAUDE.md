@@ -44,13 +44,65 @@ Tests mock the hardware dependencies (`waveshare_epd`, `pirateweather`) since th
 
 ## Supported Displays
 
-The weather station supports Waveshare 2.13" e-Paper displays (104x212 resolution):
+All Waveshare 2.13" e-Paper displays are supported:
 
-- **epd2in13bc** (default) - Bi-color (black/red)
-- **epd2in13d** - Monochrome (black/white) with partial update support
+**104x212 resolution:**
+- `epd2in13bc` (default) - Bi-color (black/red)
+- `epd2in13d` - Monochrome with partial update
+
+**122x250 resolution:**
+- `epd2in13` - Monochrome (original)
+- `epd2in13_V2`, `epd2in13_V3`, `epd2in13_V4` - Monochrome variants
+- `epd2in13b_V3`, `epd2in13b_V4` - Bi-color (black/red)
+- `epd2in13g` - 4-color (black/white/yellow/red)
 
 Configure via `DISPLAY_MODEL` environment variable in `.env` file.
-Both displays share the same layout (104x212 landscape).
+Layout automatically scales based on display resolution.
+
+## Emulator Testing
+
+Test display layouts without physical hardware using EPD-Emulator:
+
+### Setup (macOS/Development)
+```bash
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install in dev mode (includes EPD-Emulator and pytest)
+pip install -e ".[dev]"
+```
+
+**Note:** Hardware libraries (spidev, lgpio, gpiozero) are automatically skipped on macOS/Windows using platform markers in pyproject.toml.
+
+### Font Setup (macOS only)
+DejaVu Sans font is pre-installed on Raspberry Pi OS but required for macOS development:
+
+```bash
+brew install font-dejavu
+```
+
+Configure in `.env`: `FONT_PATH=~/Library/Fonts/DejaVuSans-Bold.ttf`
+
+### Usage
+```bash
+# Run with emulator (opens in browser at http://localhost:5000)
+USE_EMULATOR=true DISPLAY_MODEL=epd2in13bc .venv/bin/python weatherstation.py
+
+# Use Tkinter window instead of browser
+USE_EMULATOR=true USE_TKINTER=true .venv/bin/python weatherstation.py
+
+# Test different display models
+USE_EMULATOR=true DISPLAY_MODEL=epd2in13d .venv/bin/python weatherstation.py
+```
+
+**Note:** Browser mode (Flask) is the default. Set `USE_TKINTER=true` for a native Tkinter window.
+
+### Benefits
+- Visual preview of layout without hardware
+- Fast iteration on design changes
+- Test multiple display models quickly
+- No Raspberry Pi required for development
 
 ## Development Notes
 - Hardware libraries are mocked in tests - see `tests/test_weatherstation.py`
