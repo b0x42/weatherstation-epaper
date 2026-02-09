@@ -7,6 +7,11 @@
 
 A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports multiple display models (bi-color and monochrome). Shows current temperature, daily max, and weather summary.
 
+- Current temperature, daily max temperature with a beautiful weather icon
+- Multi-language weather summaries
+- 10 supported Waveshare 2.13" display models (bi-color and monochrome)
+- Desktop development with built-in e-Paper emulator
+
 <img src="docs/screenshot.png" alt="Display Screenshot" width="509">
 
 ## Table of Contents
