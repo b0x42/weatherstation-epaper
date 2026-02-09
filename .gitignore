@@ -5,5 +5,5 @@ __pycache__/
 .claude/
 venv/
 .venv/
-EPD-Emulator/
+E-Paper-Emulator/
 weatherstation.log
