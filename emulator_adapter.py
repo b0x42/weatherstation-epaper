@@ -2,6 +2,8 @@
 
 from PIL import Image, ImageChops
 
+from display_config import get_display_config
+
 try:
     from epaper_emulator import EPD as EmulatorEPD
     EMULATOR_AVAILABLE = True
@@ -23,19 +25,6 @@ EMULATOR_CONFIG_MAPPING = {
     'epd2in13b_V3': 'epd2in13',   # Bi-color V3 (use base config)
     'epd2in13b_V4': 'epd2in13',   # Bi-color V4 (use base config)
     'epd2in13g': 'epd2in13',      # 4-color (use base config)
-}
-
-# Resolution mapping for each model
-DISPLAY_RESOLUTION = {
-    'epd2in13bc': (104, 212),
-    'epd2in13d': (104, 212),
-    'epd2in13': (122, 250),
-    'epd2in13_V2': (122, 250),
-    'epd2in13_V3': (122, 250),
-    'epd2in13_V4': (122, 250),
-    'epd2in13b_V3': (122, 250),
-    'epd2in13b_V4': (122, 250),
-    'epd2in13g': (122, 250),
 }
 
 
@@ -76,7 +65,8 @@ class EmulatorAdapter:
         self._model_name = model_name
         self._use_color = use_color
         self._initialized = False
-        self._resolution = DISPLAY_RESOLUTION[model_name]
+        config = get_display_config(model_name)
+        self._resolution = (config['width'], config['height'])
 
     def init(self):
         """Initialize the emulated display."""
