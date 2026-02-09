@@ -165,7 +165,8 @@ def _create_mock_epd():
     return mock_epd
 
 
-def test_display_weather_red_layer_when_temp_equals_max():
+@patch('weatherstation.log_message')
+def test_display_weather_red_layer_when_temp_equals_max(_mock_log):
     """Test that temperature is drawn on red layer when current temp >= max temp."""
     mock_epd = _create_mock_epd()
     layout = get_layout_config('epd2in13bc')
@@ -188,7 +189,8 @@ def test_display_weather_red_layer_when_temp_equals_max():
     assert 0 in black_pixels, "Black layer should contain ink for icon and summary"
 
 
-def test_display_weather_black_layer_when_temp_below_max():
+@patch('weatherstation.log_message')
+def test_display_weather_black_layer_when_temp_below_max(_mock_log):
     """Test that temperature is drawn on black layer when current temp < max temp."""
     mock_epd = _create_mock_epd()
     layout = get_layout_config('epd2in13bc')
