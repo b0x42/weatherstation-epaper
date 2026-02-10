@@ -24,25 +24,29 @@ Contributions are welcome — whether it's adding display model support, fixing 
 
 ### Making Changes
 
-- Implement changes within your feature branch
-- If modifying display logic, test with the emulator (`USE_EMULATOR=true python weatherstation.py`)
-- Run the test suite:
-  ```bash
-  python -m pytest tests/ -v
-  ```
-- Run linting checks:
-  ```bash
-  flake8 weatherstation.py display_config.py emulator_adapter.py
-  pylint --fail-under=8 weatherstation.py display_config.py emulator_adapter.py
-  ```
+1. Make your changes in your feature branch
+2. If your change touches display logic, test with the emulator (`USE_EMULATOR=true python weatherstation.py`)
+3. Run the test suite:
+   ```bash
+   python -m pytest tests/ -v
+   ```
+4. Run the linter:
+   ```bash
+   flake8 weatherstation.py display_config.py emulator_adapter.py
+   pylint --fail-under=8 weatherstation.py display_config.py emulator_adapter.py
+   ```
 
-### Pull Request Requirements
+### Submitting a Pull Request
 
-Before submitting, ensure:
+1. Push your branch to your fork
+2. Open a Pull Request against the `main` branch
+3. Fill out the PR template completely
+4. Ensure CI checks pass
 
-- Clear description explaining what changed and why
+**PR Requirements:**
+- Clear description of what changed and why
 - One feature or fix per PR
-- All tests pass
+- Tests pass
 - No linting errors (`flake8`) and pylint score >= 8.0
 - Code follows existing patterns in `weatherstation.py` and `display_config.py`
 - API compatibility maintained with Waveshare's Python EPD library
@@ -67,6 +71,6 @@ To support an additional Waveshare 2.13" display:
 - For bi-color displays, pass separate black and red image buffers to `display()`
 - Max line length: 127 characters
 
-## Questions and Discussions
+## Questions?
 
-For non-bug questions or feature ideas, open a [GitHub Discussion](https://github.com/benjaminburzan/weatherstation-epaper/discussions) rather than filing an issue.
+Open a [GitHub Discussion](https://github.com/benjaminburzan/weatherstation-epaper/discussions) for questions that aren't bug reports or feature requests.
