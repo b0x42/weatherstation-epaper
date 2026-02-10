@@ -61,7 +61,7 @@ sudo raspi-config
 ### 2. Install System Dependencies
 
 ```bash
-sudo apt install python3-pip python3-venv pipx git fonts-dejavu
+sudo apt install python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev
 ```
 
 ### 3. Install Weather Station
