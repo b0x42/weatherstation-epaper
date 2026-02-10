@@ -228,10 +228,6 @@ USE_EMULATOR=true DISPLAY_MODEL=epd2in13d python weatherstation.py
 python -m pytest tests/ -v
 ```
 
-### More Info
-
-For architecture details and design decisions, see [EMULATOR_INTEGRATION.md](EMULATOR_INTEGRATION.md)
-
 ## Troubleshooting
 
 ### Display not updating
