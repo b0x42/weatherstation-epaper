@@ -11,4 +11,4 @@ disable=
     broad-exception-caught
 
 [FORMAT]
-max-line-length=127
+max-line-length=120

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,6 +9,21 @@ description = "Raspberry Pi weather station with Waveshare e-Paper displays (mul
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
+authors = [
+    { name = "Benjamin Burzan" },
+]
+keywords = ["raspberry-pi", "waveshare", "e-paper", "weather-station", "epaper", "epd"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Home Automation",
+    "Topic :: System :: Hardware",
+]
 dependencies = [
     "python-pirateweather>=1.3",
     "pillow>=10.0.0",
@@ -26,6 +41,11 @@ dev = [
 
 [project.scripts]
 weatherstation = "weatherstation:main"
+
+[project.urls]
+Homepage = "https://github.com/benjaminburzan/weatherstation-epaper"
+Repository = "https://github.com/benjaminburzan/weatherstation-epaper"
+Issues = "https://github.com/benjaminburzan/weatherstation-epaper/issues"
 
 [tool.setuptools]
 py-modules = ["weatherstation", "display_config"]

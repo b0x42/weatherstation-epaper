@@ -2,6 +2,27 @@
 
 Contributions are welcome — whether it's adding display model support, fixing bugs, or improving features. This guide walks you through the process.
 
+## Report a Bug
+
+1. Read the [Troubleshooting section](https://github.com/benjaminburzan/weatherstation-epaper#troubleshooting)
+2. Ideally, open a pull request to fix it, describing both your problem and your proposed solution
+3. If not, open an issue on the repository, but do not open both an issue and a pull request
+
+## Propose a Feature
+
+1. Ideally, open a pull request to implement it, describing both the problem it solves for you and your proposed solution
+2. If not, open an issue with a detailed description of your proposed feature, the motivation for it and alternatives considered
+3. Please note we may close this issue or ask you to create a pull request if this is not something we see as sufficiently high priority
+
+## AI/LLM Usage
+
+We allow you to create issues and pull requests with AI/LLM with the following requirements:
+
+- You must disclose in the initial issue or pull request that you used AI/LLM and what tool/model/etc. you used
+- You must review all AI/LLM generated code, prose, etc. content before you ask anyone to review it for you
+- You must be able to address all pull request review comments, manually if the AI/LLM cannot do so for you
+- If you reach the point where you feel unwilling or unable to do the above, please close your issue or pull request
+
 ## Getting Started
 
 1. **Fork** the repository on GitHub
@@ -69,7 +90,7 @@ To support an additional Waveshare 2.13" display:
 - Use icon fonts (`icons/icons.json` + `icons/weathericons.ttf`) for weather icons — not image files
 - Keep canvas rendering in landscape orientation (width > height)
 - For bi-color displays, pass separate black and red image buffers to `display()`
-- Max line length: 127 characters
+- Max line length: 120 characters
 
 ## Questions?
 

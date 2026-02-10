@@ -28,8 +28,6 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 - [Credits](#credits)
 - [License](#license)
 
----
-
 ## Quick Start
 
 > **TL;DR** - Get it running in 4 steps:
@@ -38,8 +36,6 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 2. **Clone this repo** and install dependencies (see [Installation](#installation))
 3. **Configure `.env`** with your API key and location
 4. **Run it:** `python3 weatherstation.py`
-
----
 
 ## What You Need
 
@@ -52,8 +48,6 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 - Free [Pirate Weather API key](https://pirate-weather.apiable.io/products/weather-data/plans)
 - Raspberry Pi OS or Debian-based Linux distro
 - DejaVu Sans Bold font (pre-installed on Raspberry Pi OS)
-
----
 
 ## Installation
 
@@ -100,8 +94,6 @@ nano .env
 
 At minimum, set your `PIRATE_WEATHER_API_KEY`. See [Configuration](#configuration) for all available options.
 
----
-
 ## Configuration
 
 All settings are configured via environment variables in your `.env` file.
@@ -116,8 +108,6 @@ All settings are configured via environment variables in your `.env` file.
 | `DISPLAY_MODEL` | Display model (see [Supported Display Models](#supported-display-models)) | epd2in13bc |
 | `FLIP_DISPLAY` | Set to `true` to rotate display 180° | false |
 | `UPDATE_INTERVAL_SECONDS` | How often to refresh (1800 = 30 min) | 1800 |
-
----
 
 ## Usage
 
@@ -150,8 +140,6 @@ sudo systemctl status weatherstation
 tail -f /var/log/weatherstation.log
 ```
 
----
-
 ## Supported Display Models
 
 All Waveshare 2.13" e-Paper displays are supported:
@@ -179,8 +167,6 @@ All Waveshare 2.13" e-Paper displays are supported:
 - Bi-color displays: Red activates when current temp ≥ max temp
 - Layout automatically scales based on display resolution
 - All displays work with both hardware and emulator
-
----
 
 ## Development & Testing
 
@@ -246,8 +232,6 @@ python -m pytest tests/ -v
 
 For architecture details and design decisions, see [EMULATOR_INTEGRATION.md](EMULATOR_INTEGRATION.md)
 
----
-
 ## Troubleshooting
 
 ### Display not updating
@@ -275,8 +259,6 @@ sudo touch /var/log/weatherstation.log
 sudo chmod 666 /var/log/weatherstation.log
 ```
 
----
-
 ## File Structure
 
 ```
@@ -297,8 +279,6 @@ weatherstation-epaper/
 │   └── test_emulator_integration.py  # Emulator integration tests
 └── venv/                  # Python virtual environment (created during setup)
 ```
-
----
 
 ## Credits
 
