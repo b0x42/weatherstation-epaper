@@ -20,7 +20,7 @@ for display_model in ALL_DISPLAY_MODELS:
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 
-from display_config import (
+from display_config import (  # noqa: E402
     DISPLAY_REGISTRY,
     get_display_config,
     get_layout_config,

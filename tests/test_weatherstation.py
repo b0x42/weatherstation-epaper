@@ -18,8 +18,8 @@ if os.environ.get("USE_EMULATOR", "false").lower() != "true":
     for display_model in ['epd2in13bc', 'epd2in13d']:
         sys.modules[f'waveshare_epd.{display_model}'] = MagicMock()
 
-from weatherstation import wrap_text, get_line_height, fit_summary_to_lines, display_weather
-from display_config import get_layout_config
+from weatherstation import wrap_text, get_line_height, fit_summary_to_lines, display_weather  # noqa: E402
+from display_config import get_layout_config  # noqa: E402
 
 ICONS_PATH = os.path.join(PROJECT_ROOT, "icons", "icons.json")
 
@@ -61,6 +61,7 @@ def test_wrap_text_wraps_long_text():
     """Test that long text wraps to multiple lines."""
     mock_font = MagicMock()
     # Simulate: each word is ~30px, max_width is 70px (fits ~2 words per line)
+
     def mock_getlength(text):
         return len(text.split()) * 30
     mock_font.getlength.side_effect = mock_getlength

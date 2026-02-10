@@ -4,7 +4,6 @@ These tests require E-Paper-Emulator to be installed.
 Run with: USE_EMULATOR=true pytest tests/test_emulator_integration.py
 """
 import os
-import sys
 
 import pytest
 
