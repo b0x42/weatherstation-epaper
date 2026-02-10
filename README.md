@@ -94,7 +94,7 @@ nano .env
 
 At minimum, set your `PIRATE_WEATHER_API_KEY`. See [Configuration](#configuration) for all available options.
 
-### 5. Update
+### Update
 
 #### Option A: pipx
 
