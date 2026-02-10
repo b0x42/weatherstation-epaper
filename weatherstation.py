@@ -276,7 +276,7 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
         icon_top_whitespace = icon_bbox[1]
 
         # Align visible icon with padding from right and top edges
-        icon_x = epd.height - padding - icon_actual_width - icon_left_whitespace
+        icon_x = epd.height - padding - icon_actual_width - icon_left_whitespace - 2
         icon_y = padding - icon_top_whitespace
 
         draw_black.text((icon_x, icon_y), icon_char, font=font_icon, fill=0)
