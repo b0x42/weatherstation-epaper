@@ -94,6 +94,23 @@ nano .env
 
 At minimum, set your `PIRATE_WEATHER_API_KEY`. See [Configuration](#configuration) for all available options.
 
+### 5. Update
+
+#### Option A: pipx
+
+```bash
+pipx upgrade weatherstation-epaper
+```
+
+#### Option B: venv
+
+```bash
+cd ~/weatherstation-epaper
+source venv/bin/activate
+git pull
+pip install .
+```
+
 ## Configuration
 
 All settings are configured via environment variables in your `.env` file.
