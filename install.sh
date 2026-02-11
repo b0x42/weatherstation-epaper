@@ -15,6 +15,13 @@ if [[ "$(uname)" != "Linux" ]]; then
     exit 1
 fi
 
+# ─── Detect existing installation ───────────────────────────────────────────
+IS_UPDATE=false
+if pipx list 2>/dev/null | grep -q weatherstation-epaper; then
+    IS_UPDATE=true
+    echo "  Existing installation detected — running update."
+fi
+
 # ─── Enable SPI ──────────────────────────────────────────────────────────────
 echo "→ Checking SPI interface..."
 if ls /dev/spi* &>/dev/null; then
@@ -31,10 +38,15 @@ echo "→ Installing system dependencies..."
 sudo apt update
 sudo apt install -y python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev
 
-# ─── Install weatherstation-epaper via pipx ──────────────────────────────────
+# ─── Install or update weatherstation-epaper via pipx ────────────────────────
 echo ""
-echo "→ Installing weatherstation-epaper..."
-pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
+if [[ "$IS_UPDATE" == true ]]; then
+    echo "→ Updating weatherstation-epaper..."
+    pipx upgrade weatherstation-epaper
+else
+    echo "→ Installing weatherstation-epaper..."
+    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
+fi
 
 # ─── Install Waveshare e-Paper library (sparse checkout) ────────────────────
 echo ""
@@ -43,31 +55,35 @@ TMPDIR=$(mktemp -d)
 git clone --depth 1 --filter=blob:none --sparse \
     https://github.com/waveshareteam/e-Paper.git "$TMPDIR/e-Paper"
 git -C "$TMPDIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject weatherstation-epaper "$TMPDIR/e-Paper/RaspberryPi_JetsonNano/python/"
+pipx inject --force weatherstation-epaper "$TMPDIR/e-Paper/RaspberryPi_JetsonNano/python/"
 rm -rf "$TMPDIR"
 
 # ─── Configure .env ─────────────────────────────────────────────────────────
-echo ""
-echo "→ Configuring environment..."
+if [[ -f "$HOME/.env" ]]; then
+    echo ""
+    echo "→ Configuration file ~/.env already exists, keeping it."
+else
+    echo ""
+    echo "→ Configuring environment..."
 
-PIRATE_WEATHER_API_KEY=""
-while [[ -z "$PIRATE_WEATHER_API_KEY" ]]; do
-    read -rp "  Pirate Weather API key (required): " PIRATE_WEATHER_API_KEY
-    if [[ -z "$PIRATE_WEATHER_API_KEY" ]]; then
-        echo "  API key cannot be empty. Get one free at https://pirate-weather.apiable.io"
-    fi
-done
+    PIRATE_WEATHER_API_KEY=""
+    while [[ -z "$PIRATE_WEATHER_API_KEY" ]]; do
+        read -rp "  Pirate Weather API key (required): " PIRATE_WEATHER_API_KEY
+        if [[ -z "$PIRATE_WEATHER_API_KEY" ]]; then
+            echo "  API key cannot be empty. Get one free at https://pirate-weather.apiable.io"
+        fi
+    done
 
-read -rp "  Latitude  [52.5200]: " LATITUDE
-LATITUDE="${LATITUDE:-52.5200}"
+    read -rp "  Latitude  [52.5200]: " LATITUDE
+    LATITUDE="${LATITUDE:-52.5200}"
 
-read -rp "  Longitude [13.4050]: " LONGITUDE
-LONGITUDE="${LONGITUDE:-13.4050}"
+    read -rp "  Longitude [13.4050]: " LONGITUDE
+    LONGITUDE="${LONGITUDE:-13.4050}"
 
-read -rp "  Display model [epd2in13bc]: " DISPLAY_MODEL
-DISPLAY_MODEL="${DISPLAY_MODEL:-epd2in13bc}"
+    read -rp "  Display model [epd2in13bc]: " DISPLAY_MODEL
+    DISPLAY_MODEL="${DISPLAY_MODEL:-epd2in13bc}"
 
-cat > "$HOME/.env" <<EOF
+    cat > "$HOME/.env" <<EOF
 PIRATE_WEATHER_API_KEY=$PIRATE_WEATHER_API_KEY
 LATITUDE=$LATITUDE
 LONGITUDE=$LONGITUDE
@@ -77,8 +93,9 @@ UNITS=si
 FLIP_DISPLAY=false
 UPDATE_INTERVAL_SECONDS=1800
 EOF
-chmod 600 "$HOME/.env"
-echo "  Configuration saved to ~/.env"
+    chmod 600 "$HOME/.env"
+    echo "  Configuration saved to ~/.env"
+fi
 
 # ─── Log file ───────────────────────────────────────────────────────────────
 echo ""
@@ -86,15 +103,22 @@ echo "→ Setting up log file..."
 sudo touch /var/log/weatherstation.log
 sudo chmod 666 /var/log/weatherstation.log
 
-# ─── Systemd service (optional) ─────────────────────────────────────────────
-echo ""
-read -rp "→ Start weatherstation automatically on boot? [Y/n] " INSTALL_SERVICE
-INSTALL_SERVICE="${INSTALL_SERVICE:-Y}"
+# ─── Systemd service ────────────────────────────────────────────────────────
+if [[ "$IS_UPDATE" == true ]] && systemctl is-active --quiet weatherstation 2>/dev/null; then
+    echo ""
+    echo "→ Restarting weatherstation service..."
+    sudo systemctl restart weatherstation
+    echo "  Service restarted."
+    INSTALL_SERVICE="Y"
+else
+    echo ""
+    read -rp "→ Start weatherstation automatically on boot? [Y/n] " INSTALL_SERVICE
+    INSTALL_SERVICE="${INSTALL_SERVICE:-Y}"
 
-if [[ "$INSTALL_SERVICE" =~ ^[Yy]$ ]]; then
-    echo "  Installing systemd service..."
-    CURRENT_USER=$(whoami)
-    sudo tee /etc/systemd/system/weatherstation.service >/dev/null <<EOF
+    if [[ "$INSTALL_SERVICE" =~ ^[Yy]$ ]]; then
+        echo "  Installing systemd service..."
+        CURRENT_USER=$(whoami)
+        sudo tee /etc/systemd/system/weatherstation.service >/dev/null <<EOF
 [Unit]
 Description=Weather Station e-Paper Display
 After=network.target
@@ -112,17 +136,24 @@ ExecStartPre=/bin/sleep 5
 [Install]
 WantedBy=multi-user.target
 EOF
-    sudo systemctl daemon-reload
-    sudo systemctl enable weatherstation
-    sudo systemctl start weatherstation
-    echo "  Service installed and started."
+        sudo systemctl daemon-reload
+        sudo systemctl enable weatherstation
+        sudo systemctl start weatherstation
+        echo "  Service installed and started."
+    fi
 fi
 
 # ─── Done ────────────────────────────────────────────────────────────────────
 echo ""
-echo "  ╔══════════════════════════════════════════╗"
-echo "  ║         Installation complete!           ║"
-echo "  ╚══════════════════════════════════════════╝"
+if [[ "$IS_UPDATE" == true ]]; then
+    echo "  ╔══════════════════════════════════════════╗"
+    echo "  ║           Update complete!               ║"
+    echo "  ╚══════════════════════════════════════════╝"
+else
+    echo "  ╔══════════════════════════════════════════╗"
+    echo "  ║         Installation complete!           ║"
+    echo "  ╚══════════════════════════════════════════╝"
+fi
 echo ""
 echo "  Configuration:  ~/.env"
 echo "  Logs:           /var/log/weatherstation.log"
