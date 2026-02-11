@@ -60,50 +60,7 @@ Run the installer on your Raspberry Pi — it handles SPI, dependencies, configu
 curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epaper/main/install.sh | bash
 ```
 
-### Manual Setup with venv
-
-#### 1. Enable SPI Interface
-
-```bash
-sudo raspi-config
-# Navigate to "Interfacing Options" → "SPI" and enable it
-```
-
-#### 2. Install System Dependencies
-
-```bash
-sudo apt install python3-pip python3-venv git fonts-dejavu libjpeg-dev
-```
-
-#### 3. Install Weather Station
-
-```bash
-cd ~
-git clone https://github.com/benjaminburzan/weatherstation-epaper.git
-cd weatherstation-epaper
-python3 -m venv venv
-source venv/bin/activate
-pip install .
-pip install "git+https://github.com/waveshareteam/e-Paper.git#subdirectory=RaspberryPi_JetsonNano/python"
-```
-
-#### 4. Configure Environment Variables
-
-```bash
-cp .env.example .env
-nano .env
-```
-
-At minimum, set your `PIRATE_WEATHER_API_KEY`. See [Configuration](#configuration) for all available options.
-
-### Update
-
-```bash
-cd ~/weatherstation-epaper
-source venv/bin/activate
-git pull
-pip install .
-```
+For manual setup with pipx or venv, see the [Manual Installation Guide](docs/MANUAL_INSTALL.md).
 
 ## Configuration
 
