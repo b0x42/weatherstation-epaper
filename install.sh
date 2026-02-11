@@ -156,13 +156,29 @@ else
     read -rp "  Display model [epd2in13bc]: " DISPLAY_MODEL </dev/tty
     DISPLAY_MODEL="${DISPLAY_MODEL:-epd2in13bc}"
 
+    echo ""
+    echo "  Units for temperature and wind speed:"
+    echo "    si = Celsius, m/s    us = Fahrenheit, mph"
+    echo "    ca = Celsius, km/h   uk = Celsius, mph"
+    echo ""
+
+    read -rp "  Units [si]: " UNITS </dev/tty
+    UNITS="${UNITS:-si}"
+
+    echo ""
+    echo "  Language for weather descriptions (e.g. en, de, fr, es, it, nl, pl)."
+    echo ""
+
+    read -rp "  Language [de]: " LANGUAGE </dev/tty
+    LANGUAGE="${LANGUAGE:-de}"
+
     cat > "$HOME/.env" <<EOF
 PIRATE_WEATHER_API_KEY=$PIRATE_WEATHER_API_KEY
 LATITUDE=$LATITUDE
 LONGITUDE=$LONGITUDE
 DISPLAY_MODEL=$DISPLAY_MODEL
-LANGUAGE=de
-UNITS=si
+LANGUAGE=$LANGUAGE
+UNITS=$UNITS
 FLIP_DISPLAY=false
 UPDATE_INTERVAL_SECONDS=1800
 EOF
