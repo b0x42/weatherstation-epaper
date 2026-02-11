@@ -183,11 +183,17 @@ sudo touch /var/log/weatherstation.log
 sudo chmod 666 /var/log/weatherstation.log
 
 # ─── Systemd service ────────────────────────────────────────────────────────
-if [[ "$IS_UPDATE" == true ]] && systemctl is-active --quiet weatherstation 2>/dev/null; then
+if [[ "$IS_UPDATE" == true ]] && systemctl is-enabled --quiet weatherstation 2>/dev/null; then
     echo ""
-    echo "  Restarting the weatherstation service to apply the update..."
-    sudo systemctl restart weatherstation
-    echo "  Service restarted successfully."
+    if systemctl is-active --quiet weatherstation 2>/dev/null; then
+        echo "  Restarting the weatherstation service to apply the update..."
+        sudo systemctl restart weatherstation
+        echo "  Service restarted successfully."
+    else
+        echo "  Starting the weatherstation service..."
+        sudo systemctl start weatherstation
+        echo "  Service started."
+    fi
     INSTALL_SERVICE="Y"
 else
     echo ""
