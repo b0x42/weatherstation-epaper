@@ -43,11 +43,22 @@ echo "────────────────────────�
 echo ""
 echo "[2/6] System dependencies"
 echo ""
-echo "  Installing required packages: Python, pipx, git, fonts,"
-echo "  and image libraries. This may take a moment..."
-echo ""
-sudo apt update
-sudo apt install -y python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev
+REQUIRED_PKGS=(python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev)
+MISSING_PKGS=()
+for pkg in "${REQUIRED_PKGS[@]}"; do
+    if ! dpkg -s "$pkg" &>/dev/null; then
+        MISSING_PKGS+=("$pkg")
+    fi
+done
+
+if [[ ${#MISSING_PKGS[@]} -eq 0 ]]; then
+    echo "  All required packages are already installed."
+else
+    echo "  Installing missing packages: ${MISSING_PKGS[*]}"
+    echo ""
+    sudo apt update
+    sudo apt install -y "${MISSING_PKGS[@]}"
+fi
 echo ""
 echo "  System dependencies are ready."
 
