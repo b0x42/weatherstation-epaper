@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 # ─── Welcome ────────────────────────────────────────────────────────────────
 echo ""
@@ -17,6 +17,7 @@ fi
 
 # ─── Detect existing installation ───────────────────────────────────────────
 IS_UPDATE=false
+INSTALL_SERVICE=""
 if pipx list 2>/dev/null | grep -q weatherstation-epaper; then
     IS_UPDATE=true
     echo "  An existing installation was found."
@@ -25,6 +26,8 @@ if pipx list 2>/dev/null | grep -q weatherstation-epaper; then
 fi
 
 # ─── Enable SPI ──────────────────────────────────────────────────────────────
+echo "───────────────────────────────────────────────"
+echo ""
 echo "[1/6] SPI interface"
 echo ""
 if ls /dev/spi* &>/dev/null; then
@@ -33,8 +36,13 @@ else
     echo "  SPI is required for the e-Paper display to communicate"
     echo "  with your Raspberry Pi. Enabling it now..."
     echo ""
-    sudo raspi-config nonint do_spi 0
-    echo "  SPI has been enabled successfully."
+    if command -v raspi-config &>/dev/null; then
+        sudo raspi-config nonint do_spi 0
+        echo "  SPI has been enabled successfully."
+    else
+        echo "  WARNING: raspi-config not found. Please enable SPI manually."
+        echo "  On DietPi, use: sudo dietpi-config"
+    fi
 fi
 
 # ─── System dependencies ────────────────────────────────────────────────────
@@ -91,12 +99,14 @@ echo ""
 echo "  Downloading the Waveshare e-Paper library..."
 echo "  (Using sparse checkout to save time and bandwidth.)"
 echo ""
-TMPDIR=$(mktemp -d)
+CLONE_DIR=$(mktemp -d)
+trap 'rm -rf "$CLONE_DIR"' EXIT
 git clone --depth 1 --filter=blob:none --sparse \
-    https://github.com/waveshareteam/e-Paper.git "$TMPDIR/e-Paper"
-git -C "$TMPDIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$TMPDIR/e-Paper/RaspberryPi_JetsonNano/python/"
-rm -rf "$TMPDIR"
+    https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
+git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
+pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
+rm -rf "$CLONE_DIR"
+trap - EXIT
 echo ""
 echo "  Display driver installed."
 
@@ -143,9 +153,17 @@ else
 
     read -rp "  Latitude  [52.5200]: " LATITUDE </dev/tty
     LATITUDE="${LATITUDE:-52.5200}"
+    if ! [[ "$LATITUDE" =~ ^-?[0-9]+\.?[0-9]*$ ]]; then
+        echo "  Invalid latitude. Please enter a number (e.g. 52.5200)."
+        exit 1
+    fi
 
     read -rp "  Longitude [13.4050]: " LONGITUDE </dev/tty
     LONGITUDE="${LONGITUDE:-13.4050}"
+    if ! [[ "$LONGITUDE" =~ ^-?[0-9]+\.?[0-9]*$ ]]; then
+        echo "  Invalid longitude. Please enter a number (e.g. 13.4050)."
+        exit 1
+    fi
 
     echo ""
     echo "  Which Waveshare 2.13\" display model do you have?"
@@ -173,14 +191,14 @@ else
     LANGUAGE="${LANGUAGE:-de}"
 
     cat > "$HOME/.env" <<EOF
-PIRATE_WEATHER_API_KEY=$PIRATE_WEATHER_API_KEY
-LATITUDE=$LATITUDE
-LONGITUDE=$LONGITUDE
-DISPLAY_MODEL=$DISPLAY_MODEL
-LANGUAGE=$LANGUAGE
-UNITS=$UNITS
-FLIP_DISPLAY=false
-UPDATE_INTERVAL_SECONDS=1800
+PIRATE_WEATHER_API_KEY="$PIRATE_WEATHER_API_KEY"
+LATITUDE="$LATITUDE"
+LONGITUDE="$LONGITUDE"
+DISPLAY_MODEL="$DISPLAY_MODEL"
+LANGUAGE="$LANGUAGE"
+UNITS="$UNITS"
+FLIP_DISPLAY="false"
+UPDATE_INTERVAL_SECONDS="1800"
 EOF
     chmod 600 "$HOME/.env"
     echo ""
@@ -196,7 +214,8 @@ echo "[6/6] Finishing up"
 echo ""
 echo "  Setting up log file at /var/log/weatherstation.log..."
 sudo touch /var/log/weatherstation.log
-sudo chmod 666 /var/log/weatherstation.log
+sudo chown "$(whoami):$(whoami)" /var/log/weatherstation.log
+chmod 644 /var/log/weatherstation.log
 
 # ─── Systemd service ────────────────────────────────────────────────────────
 if [[ "$IS_UPDATE" == true ]] && systemctl is-enabled --quiet weatherstation 2>/dev/null; then
@@ -219,7 +238,7 @@ else
     read -rp "  Start on boot? [Y/n] " INSTALL_SERVICE </dev/tty
     INSTALL_SERVICE="${INSTALL_SERVICE:-Y}"
 
-    if [[ "$INSTALL_SERVICE" =~ ^[Yy]$ ]]; then
+    if [[ "$INSTALL_SERVICE" =~ ^[Yy] ]]; then
         echo ""
         echo "  Setting up the systemd service..."
         CURRENT_USER=$(whoami)
@@ -272,7 +291,7 @@ echo "    weatherstation              Run manually"
 echo "    nano ~/.env                 Edit configuration"
 echo "    tail -f /var/log/weatherstation.log"
 echo "                                View live logs"
-if [[ "$INSTALL_SERVICE" =~ ^[Yy]$ ]]; then
+if [[ "$INSTALL_SERVICE" =~ ^[Yy] ]]; then
     echo ""
     echo "  Service commands:"
     echo ""
