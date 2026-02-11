@@ -52,15 +52,13 @@ The installer sets up everything: dependencies, SPI, configuration, and an optio
 
 ## Installation
 
-### Automated Install (Recommended)
-
 Run the installer on your Raspberry Pi — it handles SPI, dependencies, configuration, and the systemd service:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epaper/main/install.sh | bash
 ```
 
-For manual setup with pipx or venv, see the [Manual Installation Guide](docs/MANUAL_INSTALL.md).
+> **Prefer manual setup?** Follow the step-by-step [Manual Installation Guide](docs/MANUAL_INSTALL.md) (pipx or venv).
 
 ## Configuration
 
