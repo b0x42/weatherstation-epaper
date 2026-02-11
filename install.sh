@@ -95,7 +95,14 @@ echo "────────────────────────�
 echo ""
 echo "[5/6] Configuration"
 echo ""
-if [[ -f "$HOME/.env" ]]; then
+if [[ -d "$HOME/.env" ]]; then
+    echo "  ERROR: $HOME/.env exists but is a directory."
+    echo "  Please remove or rename it, then re-run the installer:"
+    echo ""
+    echo "    rm -rf ~/.env"
+    echo ""
+    exit 1
+elif [[ -f "$HOME/.env" ]]; then
     echo "  Your configuration file (~/.env) already exists."
     echo "  Keeping your current settings. You can edit them later with:"
     echo ""
@@ -109,7 +116,7 @@ else
 
     PIRATE_WEATHER_API_KEY=""
     while [[ -z "$PIRATE_WEATHER_API_KEY" ]]; do
-        read -rp "  Pirate Weather API key (required): " PIRATE_WEATHER_API_KEY
+        read -rp "  Pirate Weather API key (required): " PIRATE_WEATHER_API_KEY </dev/tty
         if [[ -z "$PIRATE_WEATHER_API_KEY" ]]; then
             echo ""
             echo "  The API key is required for fetching weather data."
@@ -123,10 +130,10 @@ else
     echo "  Tip: Find your coordinates at https://latlong.net"
     echo ""
 
-    read -rp "  Latitude  [52.5200]: " LATITUDE
+    read -rp "  Latitude  [52.5200]: " LATITUDE </dev/tty
     LATITUDE="${LATITUDE:-52.5200}"
 
-    read -rp "  Longitude [13.4050]: " LONGITUDE
+    read -rp "  Longitude [13.4050]: " LONGITUDE </dev/tty
     LONGITUDE="${LONGITUDE:-13.4050}"
 
     echo ""
@@ -135,7 +142,7 @@ else
     echo "  See the full list in the README."
     echo ""
 
-    read -rp "  Display model [epd2in13bc]: " DISPLAY_MODEL
+    read -rp "  Display model [epd2in13bc]: " DISPLAY_MODEL </dev/tty
     DISPLAY_MODEL="${DISPLAY_MODEL:-epd2in13bc}"
 
     cat > "$HOME/.env" <<EOF
@@ -176,7 +183,7 @@ else
     echo "  Would you like the weather station to start automatically"
     echo "  whenever your Raspberry Pi boots up? (Recommended)"
     echo ""
-    read -rp "  Start on boot? [Y/n] " INSTALL_SERVICE
+    read -rp "  Start on boot? [Y/n] " INSTALL_SERVICE </dev/tty
     INSTALL_SERVICE="${INSTALL_SERVICE:-Y}"
 
     if [[ "$INSTALL_SERVICE" =~ ^[Yy]$ ]]; then
