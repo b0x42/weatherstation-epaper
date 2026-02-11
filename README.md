@@ -47,8 +47,8 @@ The installer sets up everything: dependencies, SPI, configuration, and an optio
 
 ### Software
 - Free [Pirate Weather API key](https://pirate-weather.apiable.io/products/weather-data/plans)
-- Raspberry Pi OS or Debian-based Linux distro
-- DejaVu Sans Bold font (pre-installed on Raspberry Pi OS)
+- Raspberry Pi OS, DietPi, or Debian-based Linux distro
+- DejaVu Sans Bold font (pre-installed on Raspberry Pi OS and DietPi)
 
 ## Installation
 
@@ -169,7 +169,7 @@ USE_EMULATOR=true USE_TKINTER=true python weatherstation.py
 ### macOS: Install Font
 
 ```bash
-# DejaVu Sans is required (pre-installed on Raspberry Pi OS)
+# DejaVu Sans is required (pre-installed on Raspberry Pi OS and DietPi)
 brew install font-dejavu
 
 # Add to .env

@@ -10,7 +10,7 @@ echo ""
 
 # ─── Check platform ─────────────────────────────────────────────────────────
 if [[ "$(uname)" != "Linux" ]]; then
-    echo "  This installer is designed for Raspberry Pi OS (Linux)."
+    echo "  This installer is designed for Raspberry Pi OS or DietPi (Linux)."
     echo "  For macOS or other systems, see the README for development setup."
     exit 1
 fi
