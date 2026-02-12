@@ -1,16 +1,19 @@
+# Example systemd service file for manual installation.
+# The automated installer (install.sh) generates its own service file
+# with the correct paths for your system.
+
 [Unit]
-Description=Weather Station
+Description=Weather Station e-Paper Display
 After=network.target
 
 [Service]
-EnvironmentFile=/root/weatherstation-epaper/.env
-ExecStart=/root/weatherstation-epaper/venv/bin/python /root/weatherstation-epaper/weatherstation.py
-WorkingDirectory=/root/weatherstation-epaper
+EnvironmentFile=%h/.env
+ExecStart=%h/.local/bin/weatherstation
 StandardOutput=append:/var/log/weatherstation.log
 StandardError=append:/var/log/weatherstation.log
 Restart=always
-User=root
-Type=idle # start when all other services have been started
+User=%u
+Type=idle
 ExecStartPre=/bin/sleep 5
 
 [Install]

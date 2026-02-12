@@ -30,12 +30,13 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 
 ## Quick Start
 
-> **TL;DR** - Get it running in 4 steps:
+> **TL;DR** - Get a free [Pirate Weather API key](https://pirate-weather.apiable.io/products/weather-data/plans), then run:
 
-1. **Get a free API key** from [Pirate Weather](https://pirate-weather.apiable.io/products/weather-data/plans) (10,000 requests/month free)
-2. **Clone this repo** and install dependencies (see [Installation](#installation))
-3. **Configure `.env`** with your API key and location
-4. **Run it:** `python3 weatherstation.py`
+```bash
+curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epaper/main/install.sh | bash
+```
+
+The installer sets up everything: dependencies, SPI, configuration, and an optional systemd service. See [Installation](#installation) for manual setup.
 
 ## What You Need
 
@@ -46,70 +47,22 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 
 ### Software
 - Free [Pirate Weather API key](https://pirate-weather.apiable.io/products/weather-data/plans)
-- Raspberry Pi OS or Debian-based Linux distro
-- DejaVu Sans Bold font (pre-installed on Raspberry Pi OS)
+- Raspberry Pi OS, DietPi, or Debian-based Linux distro
+- DejaVu Sans Bold font (pre-installed on Raspberry Pi OS and DietPi)
 
 ## Installation
 
-### 1. Enable SPI Interface
+Run the installer on your Raspberry Pi — it handles SPI, dependencies, configuration, and the systemd service:
 
 ```bash
-sudo raspi-config
-# Navigate to "Interfacing Options" → "SPI" and enable it
+curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epaper/main/install.sh | bash
 ```
 
-### 2. Install System Dependencies
+> **Prefer manual setup?** Follow the step-by-step [Manual Installation Guide](docs/MANUAL_INSTALL.md) (pipx or venv).
 
-```bash
-sudo apt install python3-pip python3-venv pipx git fonts-dejavu
-```
+### Updating
 
-### 3. Install Weather Station
-
-#### Option A: Quick Install with pipx (Recommended)
-
-```bash
-pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
-pipx inject weatherstation-epaper "git+https://github.com/waveshareteam/e-Paper.git#subdirectory=RaspberryPi_JetsonNano/python"
-```
-
-#### Option B: Manual Setup with venv
-
-```bash
-cd ~
-git clone https://github.com/benjaminburzan/weatherstation-epaper.git
-cd weatherstation-epaper
-python3 -m venv venv
-source venv/bin/activate
-pip install .
-pip install "git+https://github.com/waveshareteam/e-Paper.git#subdirectory=RaspberryPi_JetsonNano/python"
-```
-
-### 4. Configure Environment Variables
-
-```bash
-cp .env.example .env
-nano .env
-```
-
-At minimum, set your `PIRATE_WEATHER_API_KEY`. See [Configuration](#configuration) for all available options.
-
-### Update
-
-#### Option A: pipx
-
-```bash
-pipx upgrade weatherstation-epaper
-```
-
-#### Option B: venv
-
-```bash
-cd ~/weatherstation-epaper
-source venv/bin/activate
-git pull
-pip install .
-```
+To update, simply re-run the installer — it detects the existing installation, upgrades the application, and keeps your configuration.
 
 ## Configuration
 
@@ -220,7 +173,7 @@ USE_EMULATOR=true USE_TKINTER=true python weatherstation.py
 ### macOS: Install Font
 
 ```bash
-# DejaVu Sans is required (pre-installed on Raspberry Pi OS)
+# DejaVu Sans is required (pre-installed on Raspberry Pi OS and DietPi)
 brew install font-dejavu
 
 # Add to .env
@@ -276,6 +229,7 @@ sudo chmod 666 /var/log/weatherstation.log
 
 ```
 weatherstation-epaper/
+├── install.sh             # Automated installer for Raspberry Pi
 ├── weatherstation.py      # Main application
 ├── display_config.py      # Display configuration and module loading
 ├── emulator_adapter.py    # E-Paper-Emulator adapter for testing without hardware
