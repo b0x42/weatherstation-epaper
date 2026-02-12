@@ -60,6 +60,10 @@ curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epape
 
 > **Prefer manual setup?** Follow the step-by-step [Manual Installation Guide](docs/MANUAL_INSTALL.md) (pipx or venv).
 
+### Updating
+
+To update, simply re-run the installer — it detects the existing installation, upgrades the application, and keeps your configuration.
+
 ## Configuration
 
 All settings are configured via environment variables in your `.env` file.
