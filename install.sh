@@ -64,7 +64,7 @@ echo "────────────────────────�
 echo ""
 echo "${BLUE}[2/6] System dependencies${NC}"
 echo ""
-REQUIRED_PKGS=(python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev)
+REQUIRED_PKGS=(python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev libfreetype6-dev)
 MISSING_PKGS=()
 for pkg in "${REQUIRED_PKGS[@]}"; do
     if ! dpkg -s "$pkg" &>/dev/null; then
@@ -114,9 +114,9 @@ echo "  (Using sparse checkout to save time and bandwidth.)"
 echo ""
 CLONE_DIR=$(mktemp -d)
 trap 'rm -rf "$CLONE_DIR"' EXIT
-git clone --depth 1 --filter=blob:none --sparse \
+git clone --depth 1 --filter=blob:none --sparse --quiet \
     https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
-git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
+git -C "$CLONE_DIR/e-Paper" sparse-checkout set --quiet RaspberryPi_JetsonNano/python
 pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
 rm -rf "$CLONE_DIR"
 trap - EXIT
