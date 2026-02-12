@@ -7,6 +7,11 @@ echo "  ╔═══════════════════════
 echo "  ║   Weather Station e-Paper — Installer    ║"
 echo "  ╚══════════════════════════════════════════╝"
 echo ""
+echo "  Raspberry Pi weather station with Waveshare 2.13\""
+echo "  bi-color and monochrome e-Paper display"
+echo ""
+echo "  https://github.com/benjaminburzan/weatherstation-epaper"
+echo ""
 
 # ─── Check platform ─────────────────────────────────────────────────────────
 if [[ "$(uname)" != "Linux" ]]; then
