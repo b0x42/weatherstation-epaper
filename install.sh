@@ -283,6 +283,14 @@ else
     echo "  ╔══════════════════════════════════════════╗"
     echo "  ║         Installation complete!           ║"
     echo "  ╚══════════════════════════════════════════╝"
+    echo ""
+    echo "  Installed to:"
+    echo ""
+    echo "    Application   $(which weatherstation)"
+    echo "    Config        ~/.env"
+    if [[ "$INSTALL_SERVICE" =~ ^[Yy] ]]; then
+        echo "    Service       /etc/systemd/system/weatherstation.service"
+    fi
 fi
 echo ""
 echo "  Useful commands:"
