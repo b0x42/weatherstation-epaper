@@ -12,7 +12,7 @@ ExecStart=%h/.local/bin/weatherstation
 StandardOutput=append:/var/log/weatherstation.log
 StandardError=append:/var/log/weatherstation.log
 Restart=always
-User=root
+User=%u
 Type=idle
 ExecStartPre=/bin/sleep 5
 
