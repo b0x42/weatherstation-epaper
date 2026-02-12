@@ -103,31 +103,11 @@ fi
 echo ""
 echo "  ${GREEN}✓${NC} Weather station application is ready."
 
-# ─── Install Waveshare e-Paper library (sparse checkout) ────────────────────
-echo ""
-echo "───────────────────────────────────────────────"
-echo ""
-echo "${BLUE}[4/6] Waveshare e-Paper display driver${NC}"
-echo ""
-echo "  Downloading the Waveshare e-Paper library..."
-echo "  (Using sparse checkout to save time and bandwidth.)"
-echo ""
-CLONE_DIR=$(mktemp -d)
-trap 'rm -rf "$CLONE_DIR"' EXIT
-git clone --depth 1 --filter=blob:none --sparse --quiet \
-    https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
-git -C "$CLONE_DIR/e-Paper" sparse-checkout set --quiet RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
-rm -rf "$CLONE_DIR"
-trap - EXIT
-echo ""
-echo "  ${GREEN}✓${NC} Display driver installed."
-
 # ─── Configure .env ─────────────────────────────────────────────────────────
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[5/6] Configuration${NC}"
+echo "${BLUE}[4/5] Configuration${NC}"
 echo ""
 if [[ -d "$HOME/.env" ]]; then
     echo "  ${RED}✗ ERROR:${NC} $HOME/.env exists but is a directory."
@@ -225,7 +205,7 @@ fi
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[6/6] Finishing up${NC}"
+echo "${BLUE}[5/5] Finishing up${NC}"
 echo ""
 echo "  Setting up log file at /var/log/weatherstation.log..."
 sudo touch /var/log/weatherstation.log
