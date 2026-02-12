@@ -33,7 +33,7 @@ sudo apt install python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev
 ### Option A: pipx
 
 ```bash
-pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git[hardware]"
+pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git#egg=weatherstation-epaper[hardware]"
 ```
 
 ### Option B: venv
