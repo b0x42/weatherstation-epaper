@@ -2,6 +2,17 @@
 
 Step-by-step guide for installing weatherstation-epaper without the automated installer.
 
+## Table of Contents
+
+- [1. Enable SPI Interface](#1-enable-spi-interface)
+- [2. Install System Dependencies](#2-install-system-dependencies)
+- [3. Install Weather Station](#3-install-weather-station)
+- [4. Configure Environment Variables](#4-configure-environment-variables)
+- [5. Set Up Log File](#5-set-up-log-file)
+- [6. Run as System Service (optional)](#6-run-as-system-service-optional)
+- [Update](#update)
+- [Uninstall](#uninstall)
+
 ## 1. Enable SPI Interface
 
 ```bash
@@ -106,4 +117,36 @@ cd ~/weatherstation-epaper
 source venv/bin/activate
 git pull
 pip install .
+```
+
+## Uninstall
+
+### 1. Stop and remove the service
+
+```bash
+sudo systemctl stop weatherstation
+sudo systemctl disable weatherstation
+sudo rm /etc/systemd/system/weatherstation.service
+sudo systemctl daemon-reload
+```
+
+### 2. Remove the application
+
+**pipx:**
+
+```bash
+pipx uninstall weatherstation-epaper
+```
+
+**venv:**
+
+```bash
+rm -rf ~/weatherstation-epaper
+```
+
+### 3. Remove configuration and logs
+
+```bash
+rm ~/.env
+sudo rm /var/log/weatherstation.log
 ```

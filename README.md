@@ -64,6 +64,10 @@ curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epape
 
 To update, simply re-run the installer — it detects the existing installation, upgrades the application, and keeps your configuration.
 
+### Uninstalling
+
+See the [Uninstall Guide](docs/MANUAL_INSTALL.md#uninstall) for step-by-step removal instructions.
+
 ## Configuration
 
 All settings are configured via environment variables in your `.env` file.
