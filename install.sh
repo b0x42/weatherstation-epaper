@@ -196,6 +196,8 @@ else
     LANGUAGE="${LANGUAGE:-de}"
 
     cat > "$HOME/.env" <<EOF
+# Configuration docs: https://github.com/benjaminburzan/weatherstation-epaper#configuration
+#
 PIRATE_WEATHER_API_KEY="$PIRATE_WEATHER_API_KEY"
 LATITUDE="$LATITUDE"
 LONGITUDE="$LONGITUDE"

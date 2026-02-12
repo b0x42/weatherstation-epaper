@@ -56,6 +56,8 @@ Create `~/.env` manually:
 
 ```bash
 cat > ~/.env <<EOF
+# Configuration docs: https://github.com/benjaminburzan/weatherstation-epaper#configuration
+#
 PIRATE_WEATHER_API_KEY=your_api_key_here
 LATITUDE=52.5200
 LONGITUDE=13.4050
