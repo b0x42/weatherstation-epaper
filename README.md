@@ -25,7 +25,6 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 - [Development & Testing](#development--testing)
 - [Troubleshooting](#troubleshooting)
 - [File Structure](#file-structure)
-- [Uninstall](#uninstall)
 - [Credits](#credits)
 - [License](#license)
 
@@ -64,6 +63,10 @@ curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epape
 ### Updating
 
 To update, simply re-run the installer — it detects the existing installation, upgrades the application, and keeps your configuration.
+
+### Uninstalling
+
+See the [Uninstall Guide](docs/MANUAL_INSTALL.md#uninstall) for step-by-step removal instructions.
 
 ## Configuration
 
@@ -247,10 +250,6 @@ weatherstation-epaper/
 │   └── test_emulator_integration.py  # Emulator integration tests
 └── venv/                  # Python virtual environment (created during setup)
 ```
-
-## Uninstall
-
-See the [Uninstall Guide](docs/MANUAL_INSTALL.md#uninstall) for step-by-step removal instructions.
 
 ## Credits
 
