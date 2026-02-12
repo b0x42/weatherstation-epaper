@@ -25,6 +25,7 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 - [Development & Testing](#development--testing)
 - [Troubleshooting](#troubleshooting)
 - [File Structure](#file-structure)
+- [Uninstall](#uninstall)
 - [Credits](#credits)
 - [License](#license)
 
@@ -246,6 +247,10 @@ weatherstation-epaper/
 │   └── test_emulator_integration.py  # Emulator integration tests
 └── venv/                  # Python virtual environment (created during setup)
 ```
+
+## Uninstall
+
+See the [Uninstall Guide](docs/MANUAL_INSTALL.md#uninstall) for step-by-step removal instructions.
 
 ## Credits
 
