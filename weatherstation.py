@@ -176,8 +176,9 @@ def get_line_height(font, spacing=2):
     return ascent + descent + spacing
 
 
-def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_size):
-    """Find the largest font size that fits text within max_lines.
+def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_size,
+                         max_height=None, line_spacing=2):
+    """Find the largest font size that fits text within max_lines and max_height.
 
     Returns (font, lines) tuple.
     """
@@ -189,8 +190,16 @@ def fit_summary_to_lines(text, font_path, max_width, max_lines, max_size, min_si
 
         # Check if all words fit (no truncation)
         words_in_lines = sum(len(line.split()) for line in lines)
-        if words_in_lines >= word_count:
-            return font, lines
+        if words_in_lines < word_count:
+            continue
+
+        # Check if lines fit vertically
+        if max_height is not None:
+            total_height = len(lines) * get_line_height(font, line_spacing)
+            if total_height > max_height:
+                continue
+
+        return font, lines
 
     # At minimum size, return whatever fits
     font = ImageFont.truetype(font_path, min_size)
@@ -221,15 +230,17 @@ def display_weather(epd, temperature, temperature_max, summary, icon_char, has_r
         temp_height_ratio = layout['TEMP_HEIGHT_RATIO']
         line_spacing = layout['LINE_SPACING']
 
-        # Load fonts
-        available_width = epd.height - (2 * padding)  # epd.height is width in landscape
-        font_summary, summary_lines = fit_summary_to_lines(
-            summary, FONT_PATH, available_width, max_summary_lines,
-            font_size_summary_max, font_size_summary_min
-        )
-
         # Temperature area occupies top portion of display
         temp_height = int(epd.width * temp_height_ratio)
+
+        # Load fonts - fit summary within available vertical space
+        available_width = epd.height - (2 * padding)  # epd.height is width in landscape
+        available_height = epd.width - temp_height
+        font_summary, summary_lines = fit_summary_to_lines(
+            summary, FONT_PATH, available_width, max_summary_lines,
+            font_size_summary_max, font_size_summary_min,
+            max_height=available_height, line_spacing=line_spacing
+        )
 
         # Reserve space for icon on the right side
         icon_reserved_width = icon_size + padding + 8
