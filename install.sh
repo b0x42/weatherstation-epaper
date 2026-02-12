@@ -84,13 +84,13 @@ echo ""
 if [[ "$IS_UPDATE" == true ]]; then
     echo "  Upgrading weatherstation-epaper to the latest version..."
     echo ""
-    pipx upgrade weatherstation-epaper
+    pipx upgrade --verbose weatherstation-epaper
 else
     echo "  Installing weatherstation-epaper via pipx..."
     echo "  This downloads and sets up the application in an isolated environment."
     echo "  This can take a while (up to 20 minutes on slower devices like the Pi Zero)."
     echo ""
-    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
+    pipx install --verbose "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
 fi
 echo ""
 echo "  Weather station application is ready."
@@ -109,7 +109,7 @@ trap 'rm -rf "$CLONE_DIR"' EXIT
 git clone --depth 1 --filter=blob:none --sparse \
     https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
 git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
+pipx inject --verbose --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
 rm -rf "$CLONE_DIR"
 trap - EXIT
 echo ""
