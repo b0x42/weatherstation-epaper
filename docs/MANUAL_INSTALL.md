@@ -33,18 +33,7 @@ sudo apt install python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev
 ### Option A: pipx
 
 ```bash
-pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
-```
-
-Install the Waveshare e-Paper library using sparse checkout (required for Pi Zero due to repo size):
-
-```bash
-CLONE_DIR=$(mktemp -d)
-git clone --depth 1 --filter=blob:none --sparse \
-    https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
-git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
-rm -rf "$CLONE_DIR"
+pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git[hardware]"
 ```
 
 ### Option B: venv
@@ -55,8 +44,7 @@ git clone https://github.com/benjaminburzan/weatherstation-epaper.git
 cd weatherstation-epaper
 python3 -m venv venv
 source venv/bin/activate
-pip install .
-pip install "git+https://github.com/waveshareteam/e-Paper.git#subdirectory=RaspberryPi_JetsonNano/python"
+pip install ".[hardware]"
 ```
 
 ## 4. Configure Environment Variables

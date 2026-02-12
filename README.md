@@ -229,6 +229,30 @@ sudo touch /var/log/weatherstation.log
 sudo chmod 666 /var/log/weatherstation.log
 ```
 
+### Display hangs or infinite busy wait
+
+If the display appears stuck with no updates and logs show it hanging at "Displaying weather on e-Paper display...", the Waveshare driver may be waiting indefinitely for the BUSY pin. This is a known issue with some display models and upstream driver versions.
+
+**Quick fix — use the patched driver from GitHub:**
+
+```bash
+# Remove the PyPI waveshare-epaper package
+pipx runpip weatherstation-epaper uninstall -y waveshare-epaper
+
+# Install the upstream GitHub version (includes latest fixes)
+CLONE_DIR=$(mktemp -d)
+git clone --depth 1 --filter=blob:none --sparse --quiet \
+    https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
+git -C "$CLONE_DIR/e-Paper" sparse-checkout set --quiet RaspberryPi_JetsonNano/python
+pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
+rm -rf "$CLONE_DIR"
+
+# Restart the service
+sudo systemctl restart weatherstation
+```
+
+This replaces the stable PyPI package with the latest development version from Waveshare's GitHub repository, which may include hardware-specific fixes not yet released to PyPI.
+
 ## File Structure
 
 ```

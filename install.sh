@@ -41,7 +41,7 @@ fi
 # ─── Enable SPI ──────────────────────────────────────────────────────────────
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[1/6] SPI interface${NC}"
+echo "${BLUE}[1/5] SPI interface${NC}"
 echo ""
 if ls /dev/spi* &>/dev/null; then
     echo "  ${GREEN}✓${NC} SPI is already enabled. Nothing to do."
@@ -62,7 +62,7 @@ fi
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[2/6] System dependencies${NC}"
+echo "${BLUE}[2/5] System dependencies${NC}"
 echo ""
 REQUIRED_PKGS=(python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev libfreetype6-dev)
 MISSING_PKGS=()
@@ -87,7 +87,7 @@ echo "  ${GREEN}✓${NC} System dependencies are ready."
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[3/6] Weather station application${NC}"
+echo "${BLUE}[3/5] Weather station application${NC}"
 echo ""
 if [[ "$IS_UPDATE" == true ]]; then
     echo "  Upgrading weatherstation-epaper to the latest version..."
@@ -98,36 +98,16 @@ else
     echo "  This downloads and sets up the application in an isolated environment."
     echo "  This can take a while (up to 20 minutes on slower devices like the Pi Zero)."
     echo ""
-    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
+    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git[hardware]"
 fi
 echo ""
 echo "  ${GREEN}✓${NC} Weather station application is ready."
-
-# ─── Install Waveshare e-Paper library (sparse checkout) ────────────────────
-echo ""
-echo "───────────────────────────────────────────────"
-echo ""
-echo "${BLUE}[4/6] Waveshare e-Paper display driver${NC}"
-echo ""
-echo "  Downloading the Waveshare e-Paper library..."
-echo "  (Using sparse checkout to save time and bandwidth.)"
-echo ""
-CLONE_DIR=$(mktemp -d)
-trap 'rm -rf "$CLONE_DIR"' EXIT
-git clone --depth 1 --filter=blob:none --sparse --quiet \
-    https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
-git -C "$CLONE_DIR/e-Paper" sparse-checkout set --quiet RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
-rm -rf "$CLONE_DIR"
-trap - EXIT
-echo ""
-echo "  ${GREEN}✓${NC} Display driver installed."
 
 # ─── Configure .env ─────────────────────────────────────────────────────────
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[5/6] Configuration${NC}"
+echo "${BLUE}[4/5] Configuration${NC}"
 echo ""
 if [[ -d "$HOME/.env" ]]; then
     echo "  ${RED}✗ ERROR:${NC} $HOME/.env exists but is a directory."
@@ -225,7 +205,7 @@ fi
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[6/6] Finishing up${NC}"
+echo "${BLUE}[5/5] Finishing up${NC}"
 echo ""
 echo "  Setting up log file at /var/log/weatherstation.log..."
 sudo touch /var/log/weatherstation.log
