@@ -49,6 +49,7 @@ Issues = "https://github.com/benjaminburzan/weatherstation-epaper/issues"
 
 [tool.setuptools]
 py-modules = ["weatherstation", "display_config"]
+packages = ["icons"]
 
 [tool.setuptools.package-data]
-"*" = ["icons/icons.json", "icons/weathericons.ttf"]
+icons = ["icons.json", "weathericons.ttf"]
