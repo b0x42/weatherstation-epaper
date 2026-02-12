@@ -157,10 +157,11 @@ def load_display_module(model_name):
                 f"Failed to load emulator for {model_name}: {e}"
             ) from e
     else:
-        # Load hardware driver (existing behavior)
+        # Load hardware driver via waveshare-epaper package
         try:
-            module = __import__(f'waveshare_epd.{model_name}', fromlist=[model_name])
-            return getattr(module, 'EPD')
+            import epaper
+            module = epaper.epaper(model_name)
+            return module.EPD
         except ImportError as e:
             raise ImportError(
                 f"Failed to import display module for {model_name}: {e}"
