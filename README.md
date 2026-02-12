@@ -233,7 +233,7 @@ sudo chmod 666 /var/log/weatherstation.log
 
 If the display appears stuck with no updates and logs show it hanging at "Displaying weather on e-Paper display...", the Waveshare driver may be waiting indefinitely for the BUSY pin. This is a known issue with some display models and upstream driver versions.
 
-**Quick fix — use the patched driver from GitHub:**
+**For most systems — use the GitHub driver:**
 
 ```bash
 # Remove the PyPI waveshare-epaper package
@@ -251,7 +251,11 @@ rm -rf "$CLONE_DIR"
 sudo systemctl restart weatherstation
 ```
 
-This replaces the stable PyPI package with the latest development version from Waveshare's GitHub repository, which may include hardware-specific fixes not yet released to PyPI.
+**For Raspberry Pi Zero — additional fix required:**
+
+If the GitHub driver still hangs on Pi Zero hardware, you need to apply the ReadBusy timeout patch. See the complete guide: [Pi Zero ReadBusy Fix](docs/PI_ZERO_READBUSY_FIX.md)
+
+The Pi Zero fix involves creating a compatibility wrapper and patching the ReadBusy function with a timeout to work around a hardware-specific busy pin issue.
 
 ## File Structure
 
