@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ─── Colors ──────────────────────────────────────────────────────────────────
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+BLUE=$'\033[0;34m'
+BOLD=$'\033[1m'
+NC=$'\033[0m' # No Color
+
 # ─── Welcome ────────────────────────────────────────────────────────────────
 echo ""
 echo "  ╔══════════════════════════════════════════╗"
-echo "  ║   Weather Station e-Paper — Installer    ║"
+echo "  ║ ${BOLD}  Weather Station e-Paper — Installer   ${NC} ║"
 echo "  ╚══════════════════════════════════════════╝"
 echo ""
-echo "  Raspberry Pi weather station with Waveshare 2.13\""
+echo "  ⛅ Raspberry Pi weather station with Waveshare 2.13\""
 echo "  bi-color and monochrome e-Paper display"
 echo ""
 echo "  https://github.com/benjaminburzan/weatherstation-epaper"
@@ -15,7 +23,7 @@ echo ""
 
 # ─── Check platform ─────────────────────────────────────────────────────────
 if [[ "$(uname)" != "Linux" ]]; then
-    echo "  This installer is designed for Raspberry Pi OS or DietPi (Linux)."
+    echo "  ${RED}✗${NC} This installer is designed for Raspberry Pi OS or DietPi (Linux)."
     echo "  For macOS or other systems, see the README for development setup."
     exit 1
 fi
@@ -33,19 +41,19 @@ fi
 # ─── Enable SPI ──────────────────────────────────────────────────────────────
 echo "───────────────────────────────────────────────"
 echo ""
-echo "[1/6] SPI interface"
+echo "${BLUE}[1/6] SPI interface${NC}"
 echo ""
 if ls /dev/spi* &>/dev/null; then
-    echo "  SPI is already enabled. Nothing to do."
+    echo "  ${GREEN}✓${NC} SPI is already enabled. Nothing to do."
 else
     echo "  SPI is required for the e-Paper display to communicate"
     echo "  with your Raspberry Pi. Enabling it now..."
     echo ""
     if command -v raspi-config &>/dev/null; then
         sudo raspi-config nonint do_spi 0
-        echo "  SPI has been enabled successfully."
+        echo "  ${GREEN}✓${NC} SPI has been enabled successfully."
     else
-        echo "  WARNING: raspi-config not found. Please enable SPI manually."
+        echo "  ${YELLOW}WARNING:${NC} raspi-config not found. Please enable SPI manually."
         echo "  On DietPi, use: sudo dietpi-config"
     fi
 fi
@@ -54,9 +62,9 @@ fi
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "[2/6] System dependencies"
+echo "${BLUE}[2/6] System dependencies${NC}"
 echo ""
-REQUIRED_PKGS=(python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev)
+REQUIRED_PKGS=(python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev libfreetype6-dev)
 MISSING_PKGS=()
 for pkg in "${REQUIRED_PKGS[@]}"; do
     if ! dpkg -s "$pkg" &>/dev/null; then
@@ -65,7 +73,7 @@ for pkg in "${REQUIRED_PKGS[@]}"; do
 done
 
 if [[ ${#MISSING_PKGS[@]} -eq 0 ]]; then
-    echo "  All required packages are already installed."
+    echo "  ${GREEN}✓${NC} All required packages are already installed."
 else
     echo "  Installing missing packages: ${MISSING_PKGS[*]}"
     echo ""
@@ -73,63 +81,63 @@ else
     sudo apt install -y "${MISSING_PKGS[@]}"
 fi
 echo ""
-echo "  System dependencies are ready."
+echo "  ${GREEN}✓${NC} System dependencies are ready."
 
 # ─── Install or update weatherstation-epaper via pipx ────────────────────────
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "[3/6] Weather station application"
+echo "${BLUE}[3/6] Weather station application${NC}"
 echo ""
 if [[ "$IS_UPDATE" == true ]]; then
     echo "  Upgrading weatherstation-epaper to the latest version..."
     echo ""
-    pipx upgrade --verbose weatherstation-epaper
+    pipx upgrade weatherstation-epaper
 else
     echo "  Installing weatherstation-epaper via pipx..."
     echo "  This downloads and sets up the application in an isolated environment."
     echo "  This can take a while (up to 20 minutes on slower devices like the Pi Zero)."
     echo ""
-    pipx install --verbose "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
+    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
 fi
 echo ""
-echo "  Weather station application is ready."
+echo "  ${GREEN}✓${NC} Weather station application is ready."
 
 # ─── Install Waveshare e-Paper library (sparse checkout) ────────────────────
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "[4/6] Waveshare e-Paper display driver"
+echo "${BLUE}[4/6] Waveshare e-Paper display driver${NC}"
 echo ""
 echo "  Downloading the Waveshare e-Paper library..."
 echo "  (Using sparse checkout to save time and bandwidth.)"
 echo ""
 CLONE_DIR=$(mktemp -d)
 trap 'rm -rf "$CLONE_DIR"' EXIT
-git clone --depth 1 --filter=blob:none --sparse \
+git clone --depth 1 --filter=blob:none --sparse --quiet \
     https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
-git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject --verbose --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
+git -C "$CLONE_DIR/e-Paper" sparse-checkout set --quiet RaspberryPi_JetsonNano/python
+pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
 rm -rf "$CLONE_DIR"
 trap - EXIT
 echo ""
-echo "  Display driver installed."
+echo "  ${GREEN}✓${NC} Display driver installed."
 
 # ─── Configure .env ─────────────────────────────────────────────────────────
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "[5/6] Configuration"
+echo "${BLUE}[5/6] Configuration${NC}"
 echo ""
 if [[ -d "$HOME/.env" ]]; then
-    echo "  ERROR: $HOME/.env exists but is a directory."
+    echo "  ${RED}✗ ERROR:${NC} $HOME/.env exists but is a directory."
     echo "  Please remove or rename it, then re-run the installer:"
     echo ""
     echo "    rm -rf ~/.env"
     echo ""
     exit 1
 elif [[ -f "$HOME/.env" ]]; then
-    echo "  Your configuration file (~/.env) already exists."
+    echo "  ${GREEN}✓${NC} Your configuration file (~/.env) already exists."
     echo "  Keeping your current settings. You can edit them later with:"
     echo ""
     echo "    nano ~/.env"
@@ -142,10 +150,10 @@ else
 
     PIRATE_WEATHER_API_KEY=""
     while [[ -z "$PIRATE_WEATHER_API_KEY" ]]; do
-        read -rp "  Pirate Weather API key (required): " PIRATE_WEATHER_API_KEY </dev/tty
+        read -rp "$(echo "  ${YELLOW}Pirate Weather API key (required):${NC} ")" PIRATE_WEATHER_API_KEY </dev/tty
         if [[ -z "$PIRATE_WEATHER_API_KEY" ]]; then
             echo ""
-            echo "  The API key is required for fetching weather data."
+            echo "  ${YELLOW}WARNING:${NC} The API key is required for fetching weather data."
             echo "  Sign up for free at: https://pirate-weather.apiable.io"
             echo ""
         fi
@@ -156,17 +164,17 @@ else
     echo "  Tip: Find your coordinates at https://latlong.net"
     echo ""
 
-    read -rp "  Latitude  [52.5200]: " LATITUDE </dev/tty
+    read -rp "$(echo "  ${YELLOW}Latitude  [52.5200]:${NC} ")" LATITUDE </dev/tty
     LATITUDE="${LATITUDE:-52.5200}"
     if ! [[ "$LATITUDE" =~ ^-?[0-9]+\.?[0-9]*$ ]]; then
-        echo "  Invalid latitude. Please enter a number (e.g. 52.5200)."
+        echo "  ${RED}✗ ERROR:${NC} Invalid latitude. Please enter a number (e.g. 52.5200)."
         exit 1
     fi
 
-    read -rp "  Longitude [13.4050]: " LONGITUDE </dev/tty
+    read -rp "$(echo "  ${YELLOW}Longitude [13.4050]:${NC} ")" LONGITUDE </dev/tty
     LONGITUDE="${LONGITUDE:-13.4050}"
     if ! [[ "$LONGITUDE" =~ ^-?[0-9]+\.?[0-9]*$ ]]; then
-        echo "  Invalid longitude. Please enter a number (e.g. 13.4050)."
+        echo "  ${RED}✗ ERROR:${NC} Invalid longitude. Please enter a number (e.g. 13.4050)."
         exit 1
     fi
 
@@ -176,7 +184,7 @@ else
     echo "  See the full list in the README."
     echo ""
 
-    read -rp "  Display model [epd2in13bc]: " DISPLAY_MODEL </dev/tty
+    read -rp "$(echo "  ${YELLOW}Display model [epd2in13bc]:${NC} ")" DISPLAY_MODEL </dev/tty
     DISPLAY_MODEL="${DISPLAY_MODEL:-epd2in13bc}"
 
     echo ""
@@ -185,14 +193,14 @@ else
     echo "    ca = Celsius, km/h   uk = Celsius, mph"
     echo ""
 
-    read -rp "  Units [si]: " UNITS </dev/tty
+    read -rp "$(echo "  ${YELLOW}Units [si]:${NC} ")" UNITS </dev/tty
     UNITS="${UNITS:-si}"
 
     echo ""
     echo "  Language for weather descriptions (e.g. en, de, fr, es, it, nl, pl)."
     echo ""
 
-    read -rp "  Language [de]: " LANGUAGE </dev/tty
+    read -rp "$(echo "  ${YELLOW}Language [de]:${NC} ")" LANGUAGE </dev/tty
     LANGUAGE="${LANGUAGE:-de}"
 
     cat > "$HOME/.env" <<EOF
@@ -209,7 +217,7 @@ UPDATE_INTERVAL_SECONDS="1800"
 EOF
     chmod 600 "$HOME/.env"
     echo ""
-    echo "  Configuration saved to ~/.env"
+    echo "  ${GREEN}✓${NC} Configuration saved to ~/.env"
     echo "  You can change these settings anytime by editing that file."
 fi
 
@@ -217,7 +225,7 @@ fi
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "[6/6] Finishing up"
+echo "${BLUE}[6/6] Finishing up${NC}"
 echo ""
 echo "  Setting up log file at /var/log/weatherstation.log..."
 sudo touch /var/log/weatherstation.log
@@ -230,11 +238,11 @@ if [[ "$IS_UPDATE" == true ]] && systemctl is-enabled --quiet weatherstation 2>/
     if systemctl is-active --quiet weatherstation 2>/dev/null; then
         echo "  Restarting the weatherstation service to apply the update..."
         sudo systemctl restart weatherstation
-        echo "  Service restarted successfully."
+        echo "  ${GREEN}✓${NC} Service restarted successfully."
     else
         echo "  Starting the weatherstation service..."
         sudo systemctl start weatherstation
-        echo "  Service started."
+        echo "  ${GREEN}✓${NC} Service started."
     fi
     INSTALL_SERVICE="Y"
 else
@@ -242,7 +250,7 @@ else
     echo "  Would you like the weather station to start automatically"
     echo "  whenever your Raspberry Pi boots up? (Recommended)"
     echo ""
-    read -rp "  Start on boot? [Y/n] " INSTALL_SERVICE </dev/tty
+    read -rp "$(echo "  ${YELLOW}Start on boot? [Y/n]${NC} ")" INSTALL_SERVICE </dev/tty
     INSTALL_SERVICE="${INSTALL_SERVICE:-Y}"
 
     if [[ "$INSTALL_SERVICE" =~ ^[Yy] ]]; then
@@ -270,7 +278,7 @@ EOF
         sudo systemctl daemon-reload
         sudo systemctl enable weatherstation
         sudo systemctl start weatherstation
-        echo "  Service installed and started. It will run on every boot."
+        echo "  ${GREEN}✓${NC} Service installed and started. It will run on every boot."
     else
         echo ""
         echo "  No problem! You can always set this up later by re-running"
@@ -283,13 +291,13 @@ echo ""
 echo "───────────────────────────────────────────────"
 echo ""
 if [[ "$IS_UPDATE" == true ]]; then
-    echo "  ╔══════════════════════════════════════════╗"
-    echo "  ║           Update complete!               ║"
-    echo "  ╚══════════════════════════════════════════╝"
+    echo "  ${GREEN}╔══════════════════════════════════════════╗${NC}"
+    echo "  ${GREEN}║${NC} ${BOLD}          Update complete!              ${NC} ${GREEN}║${NC}"
+    echo "  ${GREEN}╚══════════════════════════════════════════╝${NC}"
 else
-    echo "  ╔══════════════════════════════════════════╗"
-    echo "  ║         Installation complete!           ║"
-    echo "  ╚══════════════════════════════════════════╝"
+    echo "  ${GREEN}╔══════════════════════════════════════════╗${NC}"
+    echo "  ${GREEN}║${NC} ${BOLD}        Installation complete!          ${NC} ${GREEN}║${NC}"
+    echo "  ${GREEN}╚══════════════════════════════════════════╝${NC}"
     echo ""
     echo "  Installed to:"
     echo ""
