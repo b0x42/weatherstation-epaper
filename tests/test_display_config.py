@@ -5,17 +5,23 @@ from unittest.mock import MagicMock
 
 import pytest
 
-# Mock waveshare_epd before importing display_config
-sys.modules['waveshare_epd'] = MagicMock()
+# Mock epaper package before importing display_config
+mock_epaper = MagicMock()
+sys.modules['epaper'] = mock_epaper
+
 ALL_DISPLAY_MODELS = [
     'epd2in13bc', 'epd2in13d',  # 104x212
     'epd2in13', 'epd2in13_V2', 'epd2in13_V3', 'epd2in13_V4',  # 122x250 mono
     'epd2in13b_V3', 'epd2in13b_V4', 'epd2in13g',  # 122x250 color
 ]
-for display_model in ALL_DISPLAY_MODELS:
+
+# Mock epaper.epaper(model_name) to return module with EPD class
+def mock_epaper_factory(model_name):
     mock_module = MagicMock()
     mock_module.EPD = MagicMock()
-    sys.modules[f'waveshare_epd.{display_model}'] = mock_module
+    return mock_module
+
+mock_epaper.epaper = mock_epaper_factory
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)

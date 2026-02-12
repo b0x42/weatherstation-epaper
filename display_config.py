@@ -162,7 +162,7 @@ def load_display_module(model_name):
             import epaper
             module = epaper.epaper(model_name)
             return module.EPD
-        except ImportError as e:
+        except (ImportError, AttributeError) as e:
             raise ImportError(
                 f"Failed to import display module for {model_name}: {e}"
             ) from e

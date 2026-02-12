@@ -11,12 +11,18 @@ sys.path.insert(0, PROJECT_ROOT)
 # Mock hardware dependencies before importing weatherstation
 sys.modules['pirateweather'] = MagicMock()
 
-# Only mock waveshare_epd if not using emulator
+# Only mock epaper if not using emulator
 if os.environ.get("USE_EMULATOR", "false").lower() != "true":
-    sys.modules['waveshare_epd'] = MagicMock()
-    # Mock display modules for both supported displays
-    for display_model in ['epd2in13bc', 'epd2in13d']:
-        sys.modules[f'waveshare_epd.{display_model}'] = MagicMock()
+    mock_epaper = MagicMock()
+
+    # Mock epaper.epaper(model_name) to return module with EPD class
+    def mock_epaper_factory(model_name):
+        mock_module = MagicMock()
+        mock_module.EPD = MagicMock()
+        return mock_module
+
+    mock_epaper.epaper = mock_epaper_factory
+    sys.modules['epaper'] = mock_epaper
 
 from weatherstation import wrap_text, get_line_height, fit_summary_to_lines, display_weather  # noqa: E402
 from display_config import get_layout_config  # noqa: E402
