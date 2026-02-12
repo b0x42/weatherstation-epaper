@@ -15,11 +15,13 @@ ALL_DISPLAY_MODELS = [
     'epd2in13b_V3', 'epd2in13b_V4', 'epd2in13g',  # 122x250 color
 ]
 
+
 # Mock epaper.epaper(model_name) to return module with EPD class
 def mock_epaper_factory(model_name):
     mock_module = MagicMock()
     mock_module.EPD = MagicMock()
     return mock_module
+
 
 mock_epaper.epaper = mock_epaper_factory
 
