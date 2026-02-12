@@ -236,8 +236,8 @@ If the display appears stuck with no updates and logs show it hanging at "Displa
 **Quick fix — use the patched driver from GitHub:**
 
 ```bash
-# Remove the PyPI waveshare-epd package
-pipx runpip weatherstation-epaper uninstall -y waveshare-epd
+# Remove the PyPI waveshare-epaper package
+pipx runpip weatherstation-epaper uninstall -y waveshare-epaper
 
 # Install the upstream GitHub version (includes latest fixes)
 CLONE_DIR=$(mktemp -d)
