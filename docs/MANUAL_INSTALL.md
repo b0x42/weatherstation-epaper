@@ -2,6 +2,16 @@
 
 Step-by-step guide for installing weatherstation-epaper without the automated installer.
 
+## Table of Contents
+
+- [1. Enable SPI Interface](#1-enable-spi-interface)
+- [2. Install System Dependencies](#2-install-system-dependencies)
+- [3. Install Weather Station](#3-install-weather-station)
+- [4. Configure Environment Variables](#4-configure-environment-variables)
+- [5. Set Up Log File](#5-set-up-log-file)
+- [6. Run as System Service (optional)](#6-run-as-system-service-optional)
+- [Update](#update)
+
 ## 1. Enable SPI Interface
 
 ```bash
