@@ -33,7 +33,7 @@ sudo apt install python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev
 ### Option A: pipx
 
 ```bash
-pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git#egg=weatherstation-epaper[hardware]"
+pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
 ```
 
 ### Option B: venv
@@ -44,7 +44,7 @@ git clone https://github.com/benjaminburzan/weatherstation-epaper.git
 cd weatherstation-epaper
 python3 -m venv venv
 source venv/bin/activate
-pip install ".[hardware]"
+pip install .
 ```
 
 ## 4. Configure Environment Variables
