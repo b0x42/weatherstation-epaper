@@ -41,7 +41,7 @@ fi
 # ─── Enable SPI ──────────────────────────────────────────────────────────────
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[1/6] SPI interface${NC}"
+echo "${BLUE}[1/5] SPI interface${NC}"
 echo ""
 if ls /dev/spi* &>/dev/null; then
     echo "  ${GREEN}✓${NC} SPI is already enabled. Nothing to do."
@@ -62,7 +62,7 @@ fi
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[2/6] System dependencies${NC}"
+echo "${BLUE}[2/5] System dependencies${NC}"
 echo ""
 REQUIRED_PKGS=(python3-pip python3-venv pipx git fonts-dejavu libjpeg-dev libfreetype6-dev)
 MISSING_PKGS=()
@@ -87,7 +87,7 @@ echo "  ${GREEN}✓${NC} System dependencies are ready."
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
-echo "${BLUE}[3/6] Weather station application${NC}"
+echo "${BLUE}[3/5] Weather station application${NC}"
 echo ""
 if [[ "$IS_UPDATE" == true ]]; then
     echo "  Upgrading weatherstation-epaper to the latest version..."
