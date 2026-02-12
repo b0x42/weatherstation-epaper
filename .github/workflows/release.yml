@@ -33,8 +33,13 @@ jobs:
       id: prev_tag
       run: |
         PREV_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sed -n '2p')
-        echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
-        echo "Previous tag: $PREV_TAG"
+        if [ -z "$PREV_TAG" ]; then
+          echo "No previous tag found. This may be the first release."
+          echo "prev_tag=" >> "$GITHUB_OUTPUT"
+        else
+          echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+          echo "Previous tag: $PREV_TAG"
+        fi
 
     - name: Generate changelog
       id: changelog
@@ -68,10 +73,26 @@ jobs:
 
         echo "Changelog generated"
 
+    - name: Check if release already exists
+      id: check_release
+      run: |
+        CURRENT_TAG=${GITHUB_REF#refs/tags/}
+        if gh release view "$CURRENT_TAG" > /dev/null 2>&1; then
+          echo "Release $CURRENT_TAG already exists, skipping creation"
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "Release $CURRENT_TAG does not exist"
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+        fi
+      env:
+        GH_TOKEN: ${{ github.token }}
+
     - name: Build Python package
+      if: steps.check_release.outputs.exists == 'false'
       run: python -m build
 
     - name: Create GitHub Release
+      if: steps.check_release.outputs.exists == 'false'
       uses: softprops/action-gh-release@v2
       with:
         body_path: CHANGELOG.md
