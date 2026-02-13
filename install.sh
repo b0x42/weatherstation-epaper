@@ -64,7 +64,7 @@ echo "────────────────────────�
 echo ""
 echo "${BLUE}[2/5] System dependencies${NC}"
 echo ""
-REQUIRED_PKGS=(python3-pip python3-dev python3-venv pipx git fonts-dejavu build-essential libjpeg-dev libfreetype6-dev zlib1g-dev)
+REQUIRED_PKGS=(python3-pip python3-dev python3-venv pipx git fonts-dejavu build-essential libjpeg-dev libfreetype-dev zlib1g-dev python3-rpi-lgpio)
 MISSING_PKGS=()
 for pkg in "${REQUIRED_PKGS[@]}"; do
     if ! dpkg -s "$pkg" &>/dev/null; then

@@ -231,52 +231,42 @@ sudo chmod 666 /var/log/weatherstation.log
 
 ### Display hangs or infinite busy wait
 
-If the display appears stuck with no updates and logs show it hanging at "Displaying weather on e-Paper display...", the Waveshare driver may be waiting indefinitely for the BUSY pin. This is a known issue with some display models and upstream driver versions.
+If the display appears stuck with no updates and logs show it hanging at "Displaying weather on e-Paper display...", the Waveshare driver is waiting indefinitely for the BUSY pin. This is a known hardware issue on Raspberry Pi Zero where the Driver HAT's power management circuit causes the display controller to lose power during reset.
 
-**For most systems — use the GitHub driver:**
+**Quick fix for Pi Zero:**
 
 ```bash
-# Remove the PyPI waveshare-epaper package
-pipx runpip weatherstation-epaper uninstall -y waveshare-epaper
-
-# Install the upstream GitHub version (includes latest fixes)
-CLONE_DIR=$(mktemp -d)
-git clone --depth 1 --filter=blob:none --sparse --quiet \
-    https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
-git -C "$CLONE_DIR/e-Paper" sparse-checkout set --quiet RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
-rm -rf "$CLONE_DIR"
-
-# Restart the service
+curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epaper/main/fix-pi-zero-readbusy.sh | bash
 sudo systemctl restart weatherstation
 ```
 
-**For Raspberry Pi Zero — additional fix required:**
+This installs the upstream GitHub driver (which includes PWR_PIN support), creates a compatibility wrapper, and patches ReadBusy with a 10-second timeout. See the complete guide: [Pi Zero ReadBusy Fix](docs/PI_ZERO_READBUSY_FIX.md)
 
-If the GitHub driver still hangs on Pi Zero hardware, you need to apply the ReadBusy timeout patch. See the complete guide: [Pi Zero ReadBusy Fix](docs/PI_ZERO_READBUSY_FIX.md)
-
-The Pi Zero fix involves creating a compatibility wrapper and patching the ReadBusy function with a timeout to work around a hardware-specific busy pin issue.
+**Note:** The fix must be reapplied after `pipx upgrade weatherstation-epaper`.
 
 ## File Structure
 
 ```
 weatherstation-epaper/
-├── install.sh             # Automated installer for Raspberry Pi
-├── weatherstation.py      # Main application
-├── display_config.py      # Display configuration and module loading
-├── emulator_adapter.py    # E-Paper-Emulator adapter for testing without hardware
-├── weatherstation.service # Systemd service file
-├── requirements.txt       # Python dependencies
-├── .env                   # Your configuration (create from .env.example)
-├── .env.example           # Configuration template
-├── icons/                 # Weather icon assets
-│   ├── icons.json         # Weather icon unicode mapping
-│   └── weathericons.ttf   # Weather icons font
-├── tests/                 # Test files
+├── install.sh                  # Automated installer for Raspberry Pi
+├── fix-pi-zero-readbusy.sh     # Pi Zero ReadBusy hang fix script
+├── weatherstation.py           # Main application
+├── display_config.py           # Display configuration and module loading
+├── emulator_adapter.py         # E-Paper-Emulator adapter for testing without hardware
+├── weatherstation.service      # Systemd service file
+├── requirements.txt            # Python dependencies
+├── .env                        # Your configuration (create from .env.example)
+├── .env.example                # Configuration template
+├── icons/                      # Weather icon assets
+│   ├── icons.json              # Weather icon unicode mapping
+│   └── weathericons.ttf        # Weather icons font
+├── tests/                      # Test files
 │   ├── test_weatherstation.py
 │   ├── test_display_config.py
-│   └── test_emulator_integration.py  # Emulator integration tests
-└── venv/                  # Python virtual environment (created during setup)
+│   └── test_emulator_integration.py
+└── docs/
+    ├── PI_ZERO_READBUSY_FIX.md # Pi Zero busy pin fix guide
+    └── MANUAL_INSTALL.md       # Manual installation guide
 ```
 
 ## Credits
