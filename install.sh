@@ -98,7 +98,7 @@ else
     echo "  This downloads and sets up the application in an isolated environment."
     echo "  This can take a while (up to 20 minutes on slower devices like the Pi Zero)."
     echo ""
-    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git[hardware]"
+    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
 fi
 echo ""
 echo "  ${GREEN}✓${NC} Weather station application is ready."
