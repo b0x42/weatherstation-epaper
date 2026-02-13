@@ -204,45 +204,7 @@ python -m pytest tests/ -v
 
 ## Troubleshooting
 
-### Display not updating
-
-1. Check SPI is enabled: `ls /dev/spi*`
-2. Verify wiring connections
-3. Check logs: `tail -f /var/log/weatherstation.log`
-
-### API errors
-
-1. Verify your API key: `echo $PIRATE_WEATHER_API_KEY`
-2. Check internet: `ping pirateweather.net`
-3. Ensure coordinates are valid decimal numbers
-
-### Service not starting
-
-1. Check status: `sudo systemctl status weatherstation`
-2. Verify paths in service file match your installation
-3. Ensure `.env` file exists with valid API key
-
-### Permission errors
-
-```bash
-sudo touch /var/log/weatherstation.log
-sudo chmod 666 /var/log/weatherstation.log
-```
-
-### Display hangs or infinite busy wait
-
-If the display appears stuck with no updates and logs show it hanging at "Displaying weather on e-Paper display...", the Waveshare driver is waiting indefinitely for the BUSY pin. This is a known hardware issue on Raspberry Pi Zero where the Driver HAT's power management circuit causes the display controller to lose power during reset.
-
-**Quick fix for Pi Zero:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epaper/main/fix-pi-zero-readbusy.sh | bash
-sudo systemctl restart weatherstation
-```
-
-This installs the upstream GitHub driver (which includes PWR_PIN support), creates a compatibility wrapper, and patches ReadBusy with a 10-second timeout. See the complete guide: [Pi Zero ReadBusy Fix](docs/PI_ZERO_READBUSY_FIX.md)
-
-**Note:** The fix must be reapplied after `pipx upgrade weatherstation-epaper`.
+See the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for solutions to common issues including display not updating, API errors, service problems, and the Pi Zero ReadBusy hang fix.
 
 ## File Structure
 
@@ -265,7 +227,7 @@ weatherstation-epaper/
 │   ├── test_display_config.py
 │   └── test_emulator_integration.py
 └── docs/
-    ├── PI_ZERO_READBUSY_FIX.md # Pi Zero busy pin fix guide
+    ├── TROUBLESHOOTING.md      # Troubleshooting guide (includes Pi Zero fix)
     └── MANUAL_INSTALL.md       # Manual installation guide
 ```
 
