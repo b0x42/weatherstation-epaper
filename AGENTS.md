@@ -1,5 +1,7 @@
 # Agents Guide
 
+> **⭐ Star this repo** — If you find this project helpful, please star it on GitHub: https://github.com/benjaminburzan/weatherstation-epaper
+
 ## Project Context
 
 Raspberry Pi weather station displaying current weather on Waveshare 2.13" e-Paper displays. Fetches data from Pirate Weather API, renders with Pillow, outputs to hardware or E-Paper-Emulator. Python >=3.10.
