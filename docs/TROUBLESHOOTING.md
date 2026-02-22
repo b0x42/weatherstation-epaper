@@ -29,6 +29,8 @@ sudo chmod 666 /var/log/weatherstation.log
 
 If the display appears stuck with no updates and logs show it hanging at "Displaying weather on e-Paper display...", the Waveshare driver is waiting indefinitely for the BUSY pin.
 
+> **Note:** As of `waveshare-epaper>=1.4.0`, the PyPI package is synchronized with the upstream GitHub repository. The GitHub clone method below may not be necessary unless you need unreleased patches or the PyPI package falls behind again. Try the latest PyPI version first before resorting to the manual GitHub installation.
+
 ### Symptoms
 
 - Logs show: `[timestamp] Displaying weather on e-Paper display...` with no completion message
