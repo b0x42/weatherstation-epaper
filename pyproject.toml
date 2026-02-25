@@ -38,16 +38,16 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
-    "epaper-emulator @ git+https://github.com/benjaminburzan/E-Paper-Emulator.git",
+    "epaper-emulator @ git+https://github.com/b0x42/E-Paper-Emulator.git",
 ]
 
 [project.scripts]
 weatherstation = "weatherstation:main"
 
 [project.urls]
-Homepage = "https://github.com/benjaminburzan/weatherstation-epaper"
-Repository = "https://github.com/benjaminburzan/weatherstation-epaper"
-Issues = "https://github.com/benjaminburzan/weatherstation-epaper/issues"
+Homepage = "https://github.com/b0x42/weatherstation-epaper"
+Repository = "https://github.com/b0x42/weatherstation-epaper"
+Issues = "https://github.com/b0x42/weatherstation-epaper/issues"
 
 [tool.setuptools]
 py-modules = ["weatherstation", "display_config"]

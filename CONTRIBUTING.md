@@ -4,7 +4,7 @@ Contributions are welcome — whether it's adding display model support, fixing 
 
 ## Report a Bug
 
-1. Read the [Troubleshooting section](https://github.com/benjaminburzan/weatherstation-epaper#troubleshooting)
+1. Read the [Troubleshooting section](https://github.com/b0x42/weatherstation-epaper#troubleshooting)
 2. Ideally, open a pull request to fix it, describing both your problem and your proposed solution
 3. If not, open an issue on the repository, but do not open both an issue and a pull request
 
@@ -94,4 +94,4 @@ To support an additional Waveshare 2.13" display:
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/benjaminburzan/weatherstation-epaper/discussions) for questions that aren't bug reports or feature requests.
+Open a [GitHub Discussion](https://github.com/b0x42/weatherstation-epaper/discussions) for questions that aren't bug reports or feature requests.

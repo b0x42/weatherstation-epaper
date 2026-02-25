@@ -33,14 +33,14 @@ sudo apt install python3-pip python3-dev python3-venv pipx git fonts-dejavu buil
 ### Option A: pipx
 
 ```bash
-pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
+pipx install "git+https://github.com/b0x42/weatherstation-epaper.git"
 ```
 
 ### Option B: venv
 
 ```bash
 cd ~
-git clone https://github.com/benjaminburzan/weatherstation-epaper.git
+git clone https://github.com/b0x42/weatherstation-epaper.git
 cd weatherstation-epaper
 python3 -m venv venv
 source venv/bin/activate
@@ -55,7 +55,7 @@ Create `~/.env` manually:
 
 ```bash
 cat > ~/.env <<EOF
-# Configuration docs: https://github.com/benjaminburzan/weatherstation-epaper#configuration
+# Configuration docs: https://github.com/b0x42/weatherstation-epaper#configuration
 #
 PIRATE_WEATHER_API_KEY=your_api_key_here
 LATITUDE=52.5200
