@@ -54,7 +54,7 @@ On Raspberry Pi Zero, the Driver HAT's power management circuit can cause the di
 ### Quick Fix
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/benjaminburzan/weatherstation-epaper/main/fix-pi-zero-readbusy.sh | bash
+curl -fsSL https://raw.githubusercontent.com/b0x42/weatherstation-epaper/main/fix-pi-zero-readbusy.sh | bash
 sudo systemctl restart weatherstation
 ```
 

@@ -12,7 +12,7 @@ If you discover a security vulnerability in weatherstation-epaper, please report
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Instead, please email the maintainer directly or use [GitHub's private vulnerability reporting](https://github.com/benjaminburzan/weatherstation-epaper/security/advisories/new).
+Instead, please email the maintainer directly or use [GitHub's private vulnerability reporting](https://github.com/b0x42/weatherstation-epaper/security/advisories/new).
 
 ### What to include
 

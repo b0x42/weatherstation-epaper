@@ -43,7 +43,7 @@ class EmulatorAdapter:
         if not EMULATOR_AVAILABLE:
             raise ImportError(
                 "E-Paper-Emulator not installed. "
-                "Install from: https://github.com/benjaminburzan/E-Paper-Emulator"
+                "Install from: https://github.com/b0x42/E-Paper-Emulator"
             )
 
         config_file = EMULATOR_CONFIG_MAPPING.get(model_name)

@@ -18,7 +18,7 @@ echo ""
 echo "  ⛅ Raspberry Pi weather station with Waveshare 2.13\""
 echo "  bi-color and monochrome e-Paper display"
 echo ""
-echo "  https://github.com/benjaminburzan/weatherstation-epaper"
+echo "  https://github.com/b0x42/weatherstation-epaper"
 echo ""
 
 # ─── Check platform ─────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ else
     echo "  This downloads and sets up the application in an isolated environment."
     echo "  This can take a while (up to 20 minutes on slower devices like the Pi Zero)."
     echo ""
-    pipx install "git+https://github.com/benjaminburzan/weatherstation-epaper.git"
+    pipx install "git+https://github.com/b0x42/weatherstation-epaper.git"
 fi
 echo ""
 echo "  ${GREEN}✓${NC} Weather station application is ready."
@@ -184,7 +184,7 @@ else
     LANGUAGE="${LANGUAGE:-de}"
 
     cat > "$HOME/.env" <<EOF
-# Configuration docs: https://github.com/benjaminburzan/weatherstation-epaper#configuration
+# Configuration docs: https://github.com/b0x42/weatherstation-epaper#configuration
 #
 PIRATE_WEATHER_API_KEY="$PIRATE_WEATHER_API_KEY"
 LATITUDE="$LATITUDE"
