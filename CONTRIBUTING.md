@@ -4,7 +4,7 @@ Contributions are welcome — whether it's adding display model support, fixing 
 
 ## Report a Bug
 
-1. Read the [Troubleshooting section](https://github.com/b0x42/weatherstation-epaper#troubleshooting)
+1. Read the [Troubleshooting section](https://github.com/b0x42/pi-weather-ink#troubleshooting)
 2. Ideally, open a pull request to fix it, describing both your problem and your proposed solution
 3. If not, open an issue on the repository, but do not open both an issue and a pull request
 
@@ -28,8 +28,8 @@ We allow you to create issues and pull requests with AI/LLM with the following r
 1. **Fork** the repository on GitHub
 2. **Clone** your fork locally:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/weatherstation-epaper.git
-   cd weatherstation-epaper
+   git clone https://github.com/YOUR-USERNAME/pi-weather-ink.git
+   cd pi-weather-ink
    ```
 3. **Install** development dependencies:
    ```bash
@@ -46,15 +46,15 @@ We allow you to create issues and pull requests with AI/LLM with the following r
 ### Making Changes
 
 1. Make your changes in your feature branch
-2. If your change touches display logic, test with the emulator (`USE_EMULATOR=true python weatherstation.py`)
+2. If your change touches display logic, test with the emulator (`USE_EMULATOR=true python pi_weather_ink.py`)
 3. Run the test suite:
    ```bash
    python -m pytest tests/ -v
    ```
 4. Run the linter:
    ```bash
-   flake8 weatherstation.py display_config.py emulator_adapter.py
-   pylint --fail-under=8 weatherstation.py display_config.py emulator_adapter.py
+   flake8 pi_weather_ink.py display_config.py emulator_adapter.py
+   pylint --fail-under=8 pi_weather_ink.py display_config.py emulator_adapter.py
    ```
 
 ### Submitting a Pull Request
@@ -69,7 +69,7 @@ We allow you to create issues and pull requests with AI/LLM with the following r
 - One feature or fix per PR
 - Tests pass
 - No linting errors (`flake8`) and pylint score >= 8.0
-- Code follows existing patterns in `weatherstation.py` and `display_config.py`
+- Code follows existing patterns in `pi_weather_ink.py` and `display_config.py`
 - API compatibility maintained with Waveshare's Python EPD library
 
 ## Adding New Display Models
@@ -94,4 +94,4 @@ To support an additional Waveshare 2.13" display:
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/b0x42/weatherstation-epaper/discussions) for questions that aren't bug reports or feature requests.
+Open a [GitHub Discussion](https://github.com/b0x42/pi-weather-ink/discussions) for questions that aren't bug reports or feature requests.

@@ -4,7 +4,7 @@
 
 1. Check SPI is enabled: `ls /dev/spi*`
 2. Verify wiring connections
-3. Check logs: `tail -f /var/log/weatherstation.log`
+3. Check logs: `tail -f /var/log/pi-weather-ink.log`
 
 ## API errors
 
@@ -14,15 +14,15 @@
 
 ## Service not starting
 
-1. Check status: `sudo systemctl status weatherstation`
+1. Check status: `sudo systemctl status pi-weather-ink`
 2. Verify paths in service file match your installation
 3. Ensure `.env` file exists with valid API key
 
 ## Permission errors
 
 ```bash
-sudo touch /var/log/weatherstation.log
-sudo chmod 666 /var/log/weatherstation.log
+sudo touch /var/log/pi-weather-ink.log
+sudo chmod 666 /var/log/pi-weather-ink.log
 ```
 
 ## Display hangs or infinite busy wait (Pi Zero)
@@ -34,7 +34,7 @@ If the display appears stuck with no updates and logs show it hanging at "Displa
 ### Symptoms
 
 - Logs show: `[timestamp] Displaying weather on e-Paper display...` with no completion message
-- `weatherstation` process uses constant CPU (20-40%)
+- `pi-weather-ink` process uses constant CPU (20-40%)
 - Display never updates
 - Service appears running but is stuck
 - Issue occurs with both PyPI `waveshare-epaper` and GitHub `waveshare-epd` packages
@@ -56,13 +56,13 @@ On Raspberry Pi Zero, the Driver HAT's power management circuit can cause the di
 ### Quick Fix
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/b0x42/weatherstation-epaper/main/fix-pi-zero-readbusy.sh | bash
-sudo systemctl restart weatherstation
+curl -fsSL https://raw.githubusercontent.com/b0x42/pi-weather-ink/main/fix-pi-zero-readbusy.sh | bash
+sudo systemctl restart pi-weather-ink
 ```
 
 This installs the upstream GitHub driver (which includes PWR_PIN support), creates a compatibility wrapper, and patches ReadBusy with a 10-second timeout.
 
-**Note:** The fix must be reapplied after `pipx upgrade weatherstation-epaper`.
+**Note:** The fix must be reapplied after `pipx upgrade pi-weather-ink`.
 
 ### Manual Fix
 
@@ -75,7 +75,7 @@ The fix involves three components:
 #### 1. Locate Your pipx Virtual Environment
 
 ```bash
-VENV_PATH="$HOME/.local/share/pipx/venvs/weatherstation-epaper"
+VENV_PATH="$HOME/.local/share/pipx/venvs/pi-weather-ink"
 PYTHON_VERSION=$(ls "$VENV_PATH/lib/" | grep python)
 SITE_PACKAGES="$VENV_PATH/lib/$PYTHON_VERSION/site-packages"
 echo "Site packages: $SITE_PACKAGES"
@@ -85,20 +85,20 @@ echo "Site packages: $SITE_PACKAGES"
 
 ```bash
 # Remove PyPI waveshare-epaper if installed
-pipx runpip weatherstation-epaper uninstall -y waveshare-epaper
+pipx runpip pi-weather-ink uninstall -y waveshare-epaper
 
 # Clone and install GitHub version
 CLONE_DIR=$(mktemp -d)
 git clone --depth 1 --filter=blob:none --sparse \
     https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
 git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
+pipx inject --force pi-weather-ink "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
 rm -rf "$CLONE_DIR"
 ```
 
 #### 3. Create Compatibility Wrapper
 
-The weatherstation code expects to `import epaper` but the GitHub package provides `waveshare_epd`. Create a wrapper:
+The pi-weather-ink code expects to `import epaper` but the GitHub package provides `waveshare_epd`. Create a wrapper:
 
 ```bash
 cat > "$SITE_PACKAGES/epaper.py" << 'EOF'
@@ -161,7 +161,7 @@ PYEOF
 rm -rf "$SITE_PACKAGES/waveshare_epd/__pycache__"
 
 # Restart service
-sudo systemctl restart weatherstation
+sudo systemctl restart pi-weather-ink
 ```
 
 ### Verification
@@ -169,7 +169,7 @@ sudo systemctl restart weatherstation
 Check logs to confirm it's working:
 
 ```bash
-tail -f /var/log/weatherstation.log
+tail -f /var/log/pi-weather-ink.log
 ```
 
 **Expected output:**

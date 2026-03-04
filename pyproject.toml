@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "weatherstation-epaper"
+name = "pi-weather-ink"
 version = "1.4.0"
 description = "Raspberry Pi weather station with Waveshare e-Paper displays (multiple models supported)"
 readme = "README.md"
@@ -42,15 +42,15 @@ dev = [
 ]
 
 [project.scripts]
-weatherstation = "weatherstation:main"
+pi-weather-ink = "pi_weather_ink:main"
 
 [project.urls]
-Homepage = "https://github.com/b0x42/weatherstation-epaper"
-Repository = "https://github.com/b0x42/weatherstation-epaper"
-Issues = "https://github.com/b0x42/weatherstation-epaper/issues"
+Homepage = "https://github.com/b0x42/pi-weather-ink"
+Repository = "https://github.com/b0x42/pi-weather-ink"
+Issues = "https://github.com/b0x42/pi-weather-ink/issues"
 
 [tool.setuptools]
-py-modules = ["weatherstation", "display_config"]
+py-modules = ["pi_weather_ink", "display_config"]
 packages = ["icons"]
 
 [tool.setuptools.package-data]

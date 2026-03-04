@@ -1,6 +1,6 @@
 # Manual Installation
 
-Step-by-step guide for installing weatherstation-epaper without the automated installer.
+Step-by-step guide for installing pi-weather-ink without the automated installer.
 
 ## Table of Contents
 
@@ -33,15 +33,15 @@ sudo apt install python3-pip python3-dev python3-venv pipx git fonts-dejavu buil
 ### Option A: pipx
 
 ```bash
-pipx install "git+https://github.com/b0x42/weatherstation-epaper.git"
+pipx install "git+https://github.com/b0x42/pi-weather-ink.git"
 ```
 
 ### Option B: venv
 
 ```bash
 cd ~
-git clone https://github.com/b0x42/weatherstation-epaper.git
-cd weatherstation-epaper
+git clone https://github.com/b0x42/pi-weather-ink.git
+cd pi-weather-ink
 python3 -m venv venv
 source venv/bin/activate
 pip install .
@@ -55,7 +55,7 @@ Create `~/.env` manually:
 
 ```bash
 cat > ~/.env <<EOF
-# Configuration docs: https://github.com/b0x42/weatherstation-epaper#configuration
+# Configuration docs: https://github.com/b0x42/pi-weather-ink#configuration
 #
 PIRATE_WEATHER_API_KEY=your_api_key_here
 LATITUDE=52.5200
@@ -81,9 +81,9 @@ At minimum, set your `PIRATE_WEATHER_API_KEY`. See [Configuration](../README.md#
 ## 5. Set Up Log File
 
 ```bash
-sudo touch /var/log/weatherstation.log
-sudo chown "$(whoami):$(whoami)" /var/log/weatherstation.log
-chmod 644 /var/log/weatherstation.log
+sudo touch /var/log/pi-weather-ink.log
+sudo chown "$(whoami):$(whoami)" /var/log/pi-weather-ink.log
+chmod 644 /var/log/pi-weather-ink.log
 ```
 
 ## 6. Run as System Service (optional)
@@ -95,13 +95,13 @@ See [Usage](../README.md#usage) in the README for systemd setup instructions.
 ### pipx
 
 ```bash
-pipx upgrade weatherstation-epaper
+pipx upgrade pi-weather-ink
 ```
 
 ### venv
 
 ```bash
-cd ~/weatherstation-epaper
+cd ~/pi-weather-ink
 source venv/bin/activate
 git pull
 pip install .
@@ -112,9 +112,9 @@ pip install .
 ### 1. Stop and remove the service
 
 ```bash
-sudo systemctl stop weatherstation
-sudo systemctl disable weatherstation
-sudo rm /etc/systemd/system/weatherstation.service
+sudo systemctl stop pi-weather-ink
+sudo systemctl disable pi-weather-ink
+sudo rm /etc/systemd/system/pi-weather-ink.service
 sudo systemctl daemon-reload
 ```
 
@@ -123,18 +123,18 @@ sudo systemctl daemon-reload
 **pipx:**
 
 ```bash
-pipx uninstall weatherstation-epaper
+pipx uninstall pi-weather-ink
 ```
 
 **venv:**
 
 ```bash
-rm -rf ~/weatherstation-epaper
+rm -rf ~/pi-weather-ink
 ```
 
 ### 3. Remove configuration and logs
 
 ```bash
 rm ~/.env
-sudo rm /var/log/weatherstation.log
+sudo rm /var/log/pi-weather-ink.log
 ```

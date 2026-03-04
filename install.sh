@@ -12,13 +12,13 @@ NC=$'\033[0m' # No Color
 # ─── Welcome ────────────────────────────────────────────────────────────────
 echo ""
 echo "  ╔══════════════════════════════════════════╗"
-echo "  ║ ${BOLD}  Weather Station e-Paper — Installer   ${NC} ║"
+echo "  ║ ${BOLD}      Pi Weather Ink — Installer        ${NC} ║"
 echo "  ╚══════════════════════════════════════════╝"
 echo ""
 echo "  ⛅ Raspberry Pi weather station with Waveshare 2.13\""
 echo "  bi-color and monochrome e-Paper display"
 echo ""
-echo "  https://github.com/b0x42/weatherstation-epaper"
+echo "  https://github.com/b0x42/pi-weather-ink"
 echo ""
 
 # ─── Check platform ─────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ fi
 # ─── Detect existing installation ───────────────────────────────────────────
 IS_UPDATE=false
 INSTALL_SERVICE=""
-if pipx list 2>/dev/null | grep -q weatherstation-epaper; then
+if pipx list 2>/dev/null | grep -q pi-weather-ink; then
     IS_UPDATE=true
     echo "  An existing installation was found."
     echo "  The installer will update it and keep your configuration."
@@ -83,22 +83,22 @@ fi
 echo ""
 echo "  ${GREEN}✓${NC} System dependencies are ready."
 
-# ─── Install or update weatherstation-epaper via pipx ────────────────────────
+# ─── Install or update pi-weather-ink via pipx ────────────────────────
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
 echo "${BLUE}[3/5] Weather station application${NC}"
 echo ""
 if [[ "$IS_UPDATE" == true ]]; then
-    echo "  Upgrading weatherstation-epaper to the latest version..."
+    echo "  Upgrading pi-weather-ink to the latest version..."
     echo ""
-    pipx upgrade weatherstation-epaper
+    pipx upgrade pi-weather-ink
 else
-    echo "  Installing weatherstation-epaper via pipx..."
+    echo "  Installing pi-weather-ink via pipx..."
     echo "  This downloads and sets up the application in an isolated environment."
     echo "  This can take a while (up to 20 minutes on slower devices like the Pi Zero)."
     echo ""
-    pipx install "git+https://github.com/b0x42/weatherstation-epaper.git"
+    pipx install "git+https://github.com/b0x42/pi-weather-ink.git"
 fi
 echo ""
 echo "  ${GREEN}✓${NC} Weather station application is ready."
@@ -184,7 +184,7 @@ else
     LANGUAGE="${LANGUAGE:-de}"
 
     cat > "$HOME/.env" <<EOF
-# Configuration docs: https://github.com/b0x42/weatherstation-epaper#configuration
+# Configuration docs: https://github.com/b0x42/pi-weather-ink#configuration
 #
 PIRATE_WEATHER_API_KEY="$PIRATE_WEATHER_API_KEY"
 LATITUDE="$LATITUDE"
@@ -207,21 +207,21 @@ echo "────────────────────────�
 echo ""
 echo "${BLUE}[5/5] Finishing up${NC}"
 echo ""
-echo "  Setting up log file at /var/log/weatherstation.log..."
-sudo touch /var/log/weatherstation.log
-sudo chown "$(whoami):$(whoami)" /var/log/weatherstation.log
-chmod 644 /var/log/weatherstation.log
+echo "  Setting up log file at /var/log/pi-weather-ink.log..."
+sudo touch /var/log/pi-weather-ink.log
+sudo chown "$(whoami):$(whoami)" /var/log/pi-weather-ink.log
+chmod 644 /var/log/pi-weather-ink.log
 
 # ─── Systemd service ────────────────────────────────────────────────────────
-if [[ "$IS_UPDATE" == true ]] && systemctl is-enabled --quiet weatherstation 2>/dev/null; then
+if [[ "$IS_UPDATE" == true ]] && systemctl is-enabled --quiet pi-weather-ink 2>/dev/null; then
     echo ""
-    if systemctl is-active --quiet weatherstation 2>/dev/null; then
-        echo "  Restarting the weatherstation service to apply the update..."
-        sudo systemctl restart weatherstation
+    if systemctl is-active --quiet pi-weather-ink 2>/dev/null; then
+        echo "  Restarting the pi-weather-ink service to apply the update..."
+        sudo systemctl restart pi-weather-ink
         echo "  ${GREEN}✓${NC} Service restarted successfully."
     else
-        echo "  Starting the weatherstation service..."
-        sudo systemctl start weatherstation
+        echo "  Starting the pi-weather-ink service..."
+        sudo systemctl start pi-weather-ink
         echo "  ${GREEN}✓${NC} Service started."
     fi
     INSTALL_SERVICE="Y"
@@ -237,16 +237,16 @@ else
         echo ""
         echo "  Setting up the systemd service..."
         CURRENT_USER=$(whoami)
-        sudo tee /etc/systemd/system/weatherstation.service >/dev/null <<EOF
+        sudo tee /etc/systemd/system/pi-weather-ink.service >/dev/null <<EOF
 [Unit]
-Description=Weather Station e-Paper Display
+Description=Pi Weather Ink Display
 After=network.target
 
 [Service]
 EnvironmentFile=$HOME/.env
-ExecStart=$HOME/.local/bin/weatherstation
-StandardOutput=append:/var/log/weatherstation.log
-StandardError=append:/var/log/weatherstation.log
+ExecStart=$HOME/.local/bin/pi-weather-ink
+StandardOutput=append:/var/log/pi-weather-ink.log
+StandardError=append:/var/log/pi-weather-ink.log
 Restart=always
 User=$CURRENT_USER
 Type=idle
@@ -256,8 +256,8 @@ ExecStartPre=/bin/sleep 5
 WantedBy=multi-user.target
 EOF
         sudo systemctl daemon-reload
-        sudo systemctl enable weatherstation
-        sudo systemctl start weatherstation
+        sudo systemctl enable pi-weather-ink
+        sudo systemctl start pi-weather-ink
         echo "  ${GREEN}✓${NC} Service installed and started. It will run on every boot."
     else
         echo ""
@@ -281,26 +281,26 @@ else
     echo ""
     echo "  Installed to:"
     echo ""
-    echo "    Application   $(which weatherstation)"
+    echo "    Application   $(which pi-weather-ink)"
     echo "    Config        ~/.env"
     if [[ "$INSTALL_SERVICE" =~ ^[Yy] ]]; then
-        echo "    Service       /etc/systemd/system/weatherstation.service"
+        echo "    Service       /etc/systemd/system/pi-weather-ink.service"
     fi
 fi
 echo ""
 echo "  Useful commands:"
 echo ""
-echo "    weatherstation              Run manually"
+echo "    pi-weather-ink              Run manually"
 echo "    nano ~/.env                 Edit configuration"
-echo "    tail -f /var/log/weatherstation.log"
+echo "    tail -f /var/log/pi-weather-ink.log"
 echo "                                View live logs"
 if [[ "$INSTALL_SERVICE" =~ ^[Yy] ]]; then
     echo ""
     echo "  Service commands:"
     echo ""
-    echo "    sudo systemctl status weatherstation"
+    echo "    sudo systemctl status pi-weather-ink"
     echo "                                Check if it's running"
-    echo "    sudo systemctl restart weatherstation"
+    echo "    sudo systemctl restart pi-weather-ink"
     echo "                                Restart after config changes"
 fi
 echo ""

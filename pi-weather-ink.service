@@ -3,14 +3,14 @@
 # with the correct paths for your system.
 
 [Unit]
-Description=Weather Station e-Paper Display
+Description=Pi Weather Ink Display
 After=network.target
 
 [Service]
 EnvironmentFile=%h/.env
-ExecStart=%h/.local/bin/weatherstation
-StandardOutput=append:/var/log/weatherstation.log
-StandardError=append:/var/log/weatherstation.log
+ExecStart=%h/.local/bin/pi-weather-ink
+StandardOutput=append:/var/log/pi-weather-ink.log
+StandardError=append:/var/log/pi-weather-ink.log
 Restart=always
 User=%u
 Type=idle

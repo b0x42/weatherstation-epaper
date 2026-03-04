@@ -3,10 +3,10 @@
 # Patches the Waveshare e-Paper driver with a ReadBusy timeout for Pi Zero hardware.
 set -e
 
-VENV_PATH="$HOME/.local/share/pipx/venvs/weatherstation-epaper"
+VENV_PATH="$HOME/.local/share/pipx/venvs/pi-weather-ink"
 if [ ! -d "$VENV_PATH/lib" ]; then
     echo "ERROR: pipx venv not found at $VENV_PATH"
-    echo "Is weatherstation-epaper installed via pipx?"
+    echo "Is pi-weather-ink installed via pipx?"
     exit 1
 fi
 
@@ -29,13 +29,13 @@ echo ""
 
 # Step 1: Install GitHub driver
 echo "[1/4] Installing GitHub waveshare driver..."
-pipx runpip weatherstation-epaper uninstall -y waveshare-epaper 2>/dev/null || true
+pipx runpip pi-weather-ink uninstall -y waveshare-epaper 2>/dev/null || true
 
 CLONE_DIR=$(mktemp -d)
 git clone --depth 1 --filter=blob:none --sparse \
     https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
 git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
+pipx inject --force pi-weather-ink "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
 rm -rf "$CLONE_DIR"
 echo "  Done."
 echo ""
@@ -107,4 +107,4 @@ echo "  Done."
 echo ""
 
 echo "Fix applied! Restart the service with:"
-echo "  sudo systemctl restart weatherstation"
+echo "  sudo systemctl restart pi-weather-ink"

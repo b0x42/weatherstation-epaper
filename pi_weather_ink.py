@@ -31,7 +31,7 @@ DISPLAY_MODEL = os.environ.get("DISPLAY_MODEL", "epd2in13bc")
 # Display settings
 FONT_PATH = os.environ.get("FONT_PATH", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
 ICON_FONT_PATH = str(SCRIPT_DIR / "icons" / "weathericons.ttf")
-LOG_FILE = os.environ.get("LOG_FILE_PATH", "/var/log/weatherstation.log")
+LOG_FILE = os.environ.get("LOG_FILE_PATH", "/var/log/pi-weather-ink.log")
 
 # Load icon mapping from file
 with open(SCRIPT_DIR / "icons" / "icons.json", "r", encoding="utf-8") as file:

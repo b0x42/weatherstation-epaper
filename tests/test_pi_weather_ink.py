@@ -1,4 +1,4 @@
-"""Tests for weatherstation module."""
+"""Tests for pi_weather_ink module."""
 import json
 import os
 import sys
@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 
-# Mock hardware dependencies before importing weatherstation
+# Mock hardware dependencies before importing pi_weather_ink
 sys.modules['pirateweather'] = MagicMock()
 
 # Only mock epaper if not using emulator
@@ -24,7 +24,7 @@ if os.environ.get("USE_EMULATOR", "false").lower() != "true":
     mock_epaper.epaper = mock_epaper_factory
     sys.modules['epaper'] = mock_epaper
 
-from weatherstation import wrap_text, get_line_height, fit_summary_to_lines, display_weather  # noqa: E402
+from pi_weather_ink import wrap_text, get_line_height, fit_summary_to_lines, display_weather  # noqa: E402
 from display_config import get_layout_config  # noqa: E402
 
 ICONS_PATH = os.path.join(PROJECT_ROOT, "icons", "icons.json")
@@ -112,7 +112,7 @@ def test_get_line_height():
     assert result == 20  # 14 + 4 + 2 (spacing)
 
 
-@patch('weatherstation.ImageFont.truetype')
+@patch('pi_weather_ink.ImageFont.truetype')
 def test_fit_summary_short_text_uses_max_size(mock_truetype):
     """Test that short text uses the maximum font size."""
     mock_font = MagicMock()
@@ -126,7 +126,7 @@ def test_fit_summary_short_text_uses_max_size(mock_truetype):
     assert lines == ["Short"]
 
 
-@patch('weatherstation.ImageFont.truetype')
+@patch('pi_weather_ink.ImageFont.truetype')
 def test_fit_summary_long_text_reduces_font_size(mock_truetype):
     """Test that long text triggers font size reduction."""
     def mock_font_factory(_path, size):
@@ -147,7 +147,7 @@ def test_fit_summary_long_text_reduces_font_size(mock_truetype):
     assert mock_truetype.call_args_list[-1][0] == ("/fake/path.ttf", 16)
 
 
-@patch('weatherstation.ImageFont.truetype')
+@patch('pi_weather_ink.ImageFont.truetype')
 def test_fit_summary_respects_minimum_size(mock_truetype):
     """Test that minimum size is respected even if text doesn't fit."""
     mock_font = MagicMock()
@@ -172,7 +172,7 @@ def _create_mock_epd():
     return mock_epd
 
 
-@patch('weatherstation.log_message')
+@patch('pi_weather_ink.log_message')
 def test_display_weather_red_layer_when_temp_equals_max(_mock_log):
     """Test that temperature is drawn on red layer when current temp >= max temp."""
     mock_epd = _create_mock_epd()
@@ -196,7 +196,7 @@ def test_display_weather_red_layer_when_temp_equals_max(_mock_log):
     assert 0 in black_pixels, "Black layer should contain ink for icon and summary"
 
 
-@patch('weatherstation.log_message')
+@patch('pi_weather_ink.log_message')
 def test_display_weather_black_layer_when_temp_below_max(_mock_log):
     """Test that temperature is drawn on black layer when current temp < max temp."""
     mock_epd = _create_mock_epd()
