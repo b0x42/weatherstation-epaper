@@ -2,7 +2,7 @@
 
 from PIL import Image, ImageChops
 
-from display_config import get_display_config
+from .display_config import get_display_config
 
 try:
     from epaper_emulator import EPD as EmulatorEPD

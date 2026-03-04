@@ -9,10 +9,10 @@ import pirateweather
 from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont
 
-from display_config import get_display_config, get_layout_config, load_display_module
+from .display_config import get_display_config, get_layout_config, load_display_module
 
-# Directory containing this script (for finding package data files)
-SCRIPT_DIR = Path(__file__).parent
+# Project root directory (for finding icons/ and .env)
+SCRIPT_DIR = Path(__file__).parent.parent
 
 # Load environment variables from .env file
 load_dotenv(SCRIPT_DIR / ".env")
