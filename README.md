@@ -90,7 +90,7 @@ All settings are configured via environment variables in your `.env` file.
 ```bash
 cd ~/pi-weather-ink
 source venv/bin/activate
-python pi_weather_ink.py
+pi-weather-ink
 ```
 
 ### Run as System Service (recommended)
@@ -168,10 +168,10 @@ cp .env.example .env
 # Edit .env and add your PIRATE_WEATHER_API_KEY
 
 # 3. Run with emulator (opens in browser at http://localhost:5000)
-USE_EMULATOR=true python pi_weather_ink.py
+USE_EMULATOR=true pi-weather-ink
 
 # Or use Tkinter window instead of browser
-USE_EMULATOR=true USE_TKINTER=true python pi_weather_ink.py
+USE_EMULATOR=true USE_TKINTER=true pi-weather-ink
 ```
 
 ### macOS: Install Font
@@ -188,10 +188,10 @@ echo "FONT_PATH=~/Library/Fonts/DejaVuSans-Bold.ttf" >> .env
 
 ```bash
 # Bi-color (black/red) - opens in browser
-USE_EMULATOR=true DISPLAY_MODEL=epd2in13bc python pi_weather_ink.py
+USE_EMULATOR=true DISPLAY_MODEL=epd2in13bc pi-weather-ink
 
 # Monochrome (black/white) - opens in browser
-USE_EMULATOR=true DISPLAY_MODEL=epd2in13d python pi_weather_ink.py
+USE_EMULATOR=true DISPLAY_MODEL=epd2in13d pi-weather-ink
 ```
 
 **Note:** The emulator uses Flask and serves at http://localhost:5000 by default. Set `USE_TKINTER=true` if you prefer a native window.
@@ -211,18 +211,18 @@ See the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for solutions to common
 ```
 pi-weather-ink/
 ├── install.sh                  # Automated installer for Raspberry Pi
-├── scripts/
-│   └── fix-pi-zero-readbusy.sh # Pi Zero ReadBusy hang fix script
-├── pi_weather_ink.py           # Main application
-├── display_config.py           # Display configuration and module loading
-├── emulator_adapter.py         # E-Paper-Emulator adapter for testing without hardware
 ├── pi-weather-ink.service      # Systemd service file
-├── requirements.txt            # Python dependencies
 ├── .env                        # Your configuration (create from .env.example)
 ├── .env.example                # Configuration template
+├── pi_weather_ink/             # Main package
+│   ├── pi_weather_ink.py       # Main application
+│   ├── display_config.py       # Display configuration and module loading
+│   └── emulator_adapter.py     # E-Paper-Emulator adapter for testing without hardware
 ├── icons/                      # Weather icon assets
 │   ├── icons.json              # Weather icon unicode mapping
 │   └── weathericons.ttf        # Weather icons font
+├── scripts/
+│   └── fix-pi-zero-readbusy.sh # Pi Zero ReadBusy hang fix script
 ├── tests/                      # Test files
 │   ├── test_pi_weather_ink.py
 │   ├── test_display_config.py

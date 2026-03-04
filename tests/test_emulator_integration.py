@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(
 
 # Check if emulator is available
 try:
-    from emulator_adapter import EmulatorAdapter, EMULATOR_AVAILABLE
+    from pi_weather_ink.emulator_adapter import EmulatorAdapter, EMULATOR_AVAILABLE
     if not EMULATOR_AVAILABLE:
         pytest.skip("E-Paper-Emulator not installed", allow_module_level=True)
 except ImportError:
@@ -58,7 +58,7 @@ def test_display_config_loads_emulator():
     os.environ['USE_EMULATOR'] = 'true'
 
     try:
-        from display_config import load_display_module
+        from pi_weather_ink.display_config import load_display_module
 
         EPDClass = load_display_module('epd2in13bc')
         epd = EPDClass()

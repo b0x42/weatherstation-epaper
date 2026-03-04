@@ -46,15 +46,15 @@ We allow you to create issues and pull requests with AI/LLM with the following r
 ### Making Changes
 
 1. Make your changes in your feature branch
-2. If your change touches display logic, test with the emulator (`USE_EMULATOR=true python pi_weather_ink.py`)
+2. If your change touches display logic, test with the emulator (`USE_EMULATOR=true pi-weather-ink`)
 3. Run the test suite:
    ```bash
    python -m pytest tests/ -v
    ```
 4. Run the linter:
    ```bash
-   flake8 pi_weather_ink.py display_config.py emulator_adapter.py
-   pylint --fail-under=8 pi_weather_ink.py display_config.py emulator_adapter.py
+   flake8 pi_weather_ink/
+   pylint --fail-under=8 pi_weather_ink/
    ```
 
 ### Submitting a Pull Request

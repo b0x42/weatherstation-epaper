@@ -126,7 +126,7 @@ def load_display_module(model_name):
     if use_emulator:
         # Load emulator adapter
         try:
-            from emulator_adapter import EmulatorAdapter, EMULATOR_AVAILABLE
+            from .emulator_adapter import EmulatorAdapter, EMULATOR_AVAILABLE
 
             if not EMULATOR_AVAILABLE:
                 raise ImportError(

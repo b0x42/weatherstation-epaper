@@ -50,8 +50,7 @@ Repository = "https://github.com/b0x42/pi-weather-ink"
 Issues = "https://github.com/b0x42/pi-weather-ink/issues"
 
 [tool.setuptools]
-py-modules = ["pi_weather_ink", "display_config"]
-packages = ["icons"]
+packages = ["pi_weather_ink", "icons"]
 
 [tool.setuptools.package-data]
 icons = ["icons.json", "weathericons.ttf"]
