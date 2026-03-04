@@ -56,13 +56,13 @@ On Raspberry Pi Zero, the Driver HAT's power management circuit can cause the di
 ### Quick Fix
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/b0x42/weatherstation-epaper/main/fix-pi-zero-readbusy.sh | bash
+curl -fsSL https://raw.githubusercontent.com/b0x42/pi-weather-ink/main/fix-pi-zero-readbusy.sh | bash
 sudo systemctl restart weatherstation
 ```
 
 This installs the upstream GitHub driver (which includes PWR_PIN support), creates a compatibility wrapper, and patches ReadBusy with a 10-second timeout.
 
-**Note:** The fix must be reapplied after `pipx upgrade weatherstation-epaper`.
+**Note:** The fix must be reapplied after `pipx upgrade pi-weather-ink`.
 
 ### Manual Fix
 
@@ -75,7 +75,7 @@ The fix involves three components:
 #### 1. Locate Your pipx Virtual Environment
 
 ```bash
-VENV_PATH="$HOME/.local/share/pipx/venvs/weatherstation-epaper"
+VENV_PATH="$HOME/.local/share/pipx/venvs/pi-weather-ink"
 PYTHON_VERSION=$(ls "$VENV_PATH/lib/" | grep python)
 SITE_PACKAGES="$VENV_PATH/lib/$PYTHON_VERSION/site-packages"
 echo "Site packages: $SITE_PACKAGES"
@@ -85,14 +85,14 @@ echo "Site packages: $SITE_PACKAGES"
 
 ```bash
 # Remove PyPI waveshare-epaper if installed
-pipx runpip weatherstation-epaper uninstall -y waveshare-epaper
+pipx runpip pi-weather-ink uninstall -y waveshare-epaper
 
 # Clone and install GitHub version
 CLONE_DIR=$(mktemp -d)
 git clone --depth 1 --filter=blob:none --sparse \
     https://github.com/waveshareteam/e-Paper.git "$CLONE_DIR/e-Paper"
 git -C "$CLONE_DIR/e-Paper" sparse-checkout set RaspberryPi_JetsonNano/python
-pipx inject --force weatherstation-epaper "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
+pipx inject --force pi-weather-ink "$CLONE_DIR/e-Paper/RaspberryPi_JetsonNano/python/"
 rm -rf "$CLONE_DIR"
 ```
 

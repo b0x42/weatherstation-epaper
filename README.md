@@ -33,7 +33,7 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 > **TL;DR** - Get a free [Pirate Weather API key](https://pirate-weather.apiable.io/products/weather-data/plans), then run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/b0x42/weatherstation-epaper/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/b0x42/pi-weather-ink/main/install.sh | bash
 ```
 
 The installer sets up everything: dependencies, SPI, configuration, and an optional systemd service. See [Installation](#installation) for manual setup.
@@ -55,7 +55,7 @@ The installer sets up everything: dependencies, SPI, configuration, and an optio
 Run the installer on your Raspberry Pi — it handles SPI, dependencies, configuration, and the systemd service:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/b0x42/weatherstation-epaper/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/b0x42/pi-weather-ink/main/install.sh | bash
 ```
 
 > **Prefer manual setup?** Follow the step-by-step [Manual Installation Guide](docs/MANUAL_INSTALL.md) (pipx or venv).
@@ -88,7 +88,7 @@ All settings are configured via environment variables in your `.env` file.
 ### Manual Start
 
 ```bash
-cd ~/weatherstation-epaper
+cd ~/pi-weather-ink
 source venv/bin/activate
 python weatherstation.py
 ```
@@ -157,8 +157,8 @@ All Waveshare 2.13" e-Paper displays are supported:
 
 ```bash
 # 1. Clone and setup (includes E-Paper-Emulator and pytest)
-git clone https://github.com/b0x42/weatherstation-epaper.git
-cd weatherstation-epaper
+git clone https://github.com/b0x42/pi-weather-ink.git
+cd pi-weather-ink
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
@@ -209,7 +209,7 @@ See the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for solutions to common
 ## File Structure
 
 ```
-weatherstation-epaper/
+pi-weather-ink/
 ├── install.sh                  # Automated installer for Raspberry Pi
 ├── fix-pi-zero-readbusy.sh     # Pi Zero ReadBusy hang fix script
 ├── weatherstation.py           # Main application

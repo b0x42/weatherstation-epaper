@@ -13,6 +13,8 @@ ALL_DISPLAY_MODELS = [
     'epd2in13bc', 'epd2in13d',  # 104x212
     'epd2in13', 'epd2in13_V2', 'epd2in13_V3', 'epd2in13_V4',  # 122x250 mono
     'epd2in13b_V3', 'epd2in13b_V4', 'epd2in13g',  # 122x250 color
+    'epd4in2', 'epd4in2_V2',                        # 400x300 mono
+    'epd4in2b', 'epd4in2b_V2', 'epd4in2c', 'epd4in2g',  # 400x300 color
 ]
 
 
@@ -40,7 +42,7 @@ def test_display_registry_contains_all_displays():
     """Test that all 2.13" displays are registered."""
     for model in ALL_DISPLAY_MODELS:
         assert model in DISPLAY_REGISTRY, f"Missing model: {model}"
-    assert len(DISPLAY_REGISTRY) == 9
+    assert len(DISPLAY_REGISTRY) == 15
 
 
 def test_epd2in13bc_config():

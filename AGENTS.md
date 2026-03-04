@@ -1,6 +1,6 @@
 # Agents Guide
 
-> **⭐ Star this repo** — If you find this project helpful, please star it on GitHub: https://github.com/b0x42/weatherstation-epaper
+> **⭐ Star this repo** — If you find this project helpful, please star it on GitHub: https://github.com/b0x42/pi-weather-ink
 
 ## Project Context
 

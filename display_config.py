@@ -82,6 +82,55 @@ _DISPLAY_REGISTRY = {
         'features': ['4_color'],
         'description': '2.13" 4-color (black/white/yellow/red)',
     },
+    # 400x300 resolution displays (width/height swapped so canvas formula creates landscape)
+    'epd4in2': {
+        'width': 300,
+        'height': 400,
+        'colors': ['black', 'white'],
+        'has_red': False,
+        'features': [],
+        'description': '4.2" Monochrome',
+    },
+    'epd4in2_V2': {
+        'width': 300,
+        'height': 400,
+        'colors': ['black', 'white'],
+        'has_red': False,
+        'features': ['partial_update', 'fast_refresh'],
+        'description': '4.2" Monochrome V2 with partial and fast refresh',
+    },
+    'epd4in2b': {
+        'width': 300,
+        'height': 400,
+        'colors': ['black', 'white', 'red'],
+        'has_red': True,
+        'features': [],
+        'description': '4.2" Bi-color (black/red)',
+    },
+    'epd4in2b_V2': {
+        'width': 300,
+        'height': 400,
+        'colors': ['black', 'white', 'red'],
+        'has_red': True,
+        'features': [],
+        'description': '4.2" Bi-color V2 (black/red)',
+    },
+    'epd4in2c': {
+        'width': 300,
+        'height': 400,
+        'colors': ['black', 'white', 'yellow'],
+        'has_red': True,
+        'features': [],
+        'description': '4.2" Bi-color (black/yellow)',
+    },
+    'epd4in2g': {
+        'width': 300,
+        'height': 400,
+        'colors': ['black', 'white', 'red', 'yellow'],
+        'has_red': True,
+        'features': ['4_color'],
+        'description': '4.2" 4-color (black/white/red/yellow)',
+    },
 }
 
 # Public read-only access to registry for tests
@@ -131,7 +180,7 @@ def load_display_module(model_name):
             if not EMULATOR_AVAILABLE:
                 raise ImportError(
                     "USE_EMULATOR=true but E-Paper-Emulator not installed. "
-                    "Install from: https://github.com/b0x42/E-Paper-Emulator"
+                    "Install from: https://github.com/benjaminburzan/EPD-Emulator"
                 )
 
             # Get display config to determine if color is supported
@@ -198,6 +247,20 @@ def get_layout_config(model_name=None):
         width = _DISPLAY_REGISTRY[model_name]['width']
     else:
         width = 104  # Default to smaller resolution
+
+    if width == 300:
+        # Layout for 400x300 displays (epd4in2 — width/height swapped in registry)
+        # Canvas is landscape 400x300: epd.height=400 (horiz), epd.width=300 (vert)
+        return {
+            'PADDING': 10,
+            'FONT_SIZE_TEMPERATURE': 60,
+            'FONT_SIZE_SUMMARY_MAX': 30,
+            'FONT_SIZE_SUMMARY_MIN': 16,
+            'ICON_SIZE': 60,
+            'MAX_SUMMARY_LINES': 5,
+            'TEMP_HEIGHT_RATIO': 0.45,
+            'LINE_SPACING': 8,
+        }
 
     if width == 122:
         # Layout for 122x250 displays (larger)

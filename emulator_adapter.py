@@ -25,6 +25,13 @@ EMULATOR_CONFIG_MAPPING = {
     'epd2in13b_V3': 'epd2in13',   # Bi-color V3 (use base config)
     'epd2in13b_V4': 'epd2in13',   # Bi-color V4 (use base config)
     'epd2in13g': 'epd2in13',      # 4-color (use base config)
+    # 400x300 resolution displays
+    'epd4in2': 'epd4in2',         # Monochrome
+    'epd4in2_V2': 'epd4in2',      # Monochrome V2
+    'epd4in2b': 'epd4in2',        # Bi-color (black/red)
+    'epd4in2b_V2': 'epd4in2',     # Bi-color V2 (black/red)
+    'epd4in2c': 'epd4in2',        # Bi-color (black/yellow)
+    'epd4in2g': 'epd4in2',        # 4-color (black/white/red/yellow)
 }
 
 
@@ -43,7 +50,7 @@ class EmulatorAdapter:
         if not EMULATOR_AVAILABLE:
             raise ImportError(
                 "E-Paper-Emulator not installed. "
-                "Install from: https://github.com/b0x42/E-Paper-Emulator"
+                "Install from: https://github.com/benjaminburzan/EPD-Emulator"
             )
 
         config_file = EMULATOR_CONFIG_MAPPING.get(model_name)

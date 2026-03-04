@@ -18,7 +18,7 @@ echo ""
 echo "  ⛅ Raspberry Pi weather station with Waveshare 2.13\""
 echo "  bi-color and monochrome e-Paper display"
 echo ""
-echo "  https://github.com/b0x42/weatherstation-epaper"
+echo "  https://github.com/b0x42/pi-weather-ink"
 echo ""
 
 # ─── Check platform ─────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ fi
 # ─── Detect existing installation ───────────────────────────────────────────
 IS_UPDATE=false
 INSTALL_SERVICE=""
-if pipx list 2>/dev/null | grep -q weatherstation-epaper; then
+if pipx list 2>/dev/null | grep -q pi-weather-ink; then
     IS_UPDATE=true
     echo "  An existing installation was found."
     echo "  The installer will update it and keep your configuration."
@@ -83,22 +83,22 @@ fi
 echo ""
 echo "  ${GREEN}✓${NC} System dependencies are ready."
 
-# ─── Install or update weatherstation-epaper via pipx ────────────────────────
+# ─── Install or update pi-weather-ink via pipx ────────────────────────
 echo ""
 echo "───────────────────────────────────────────────"
 echo ""
 echo "${BLUE}[3/5] Weather station application${NC}"
 echo ""
 if [[ "$IS_UPDATE" == true ]]; then
-    echo "  Upgrading weatherstation-epaper to the latest version..."
+    echo "  Upgrading pi-weather-ink to the latest version..."
     echo ""
-    pipx upgrade weatherstation-epaper
+    pipx upgrade pi-weather-ink
 else
-    echo "  Installing weatherstation-epaper via pipx..."
+    echo "  Installing pi-weather-ink via pipx..."
     echo "  This downloads and sets up the application in an isolated environment."
     echo "  This can take a while (up to 20 minutes on slower devices like the Pi Zero)."
     echo ""
-    pipx install "git+https://github.com/b0x42/weatherstation-epaper.git"
+    pipx install "git+https://github.com/b0x42/pi-weather-ink.git"
 fi
 echo ""
 echo "  ${GREEN}✓${NC} Weather station application is ready."
@@ -184,7 +184,7 @@ else
     LANGUAGE="${LANGUAGE:-de}"
 
     cat > "$HOME/.env" <<EOF
-# Configuration docs: https://github.com/b0x42/weatherstation-epaper#configuration
+# Configuration docs: https://github.com/b0x42/pi-weather-ink#configuration
 #
 PIRATE_WEATHER_API_KEY="$PIRATE_WEATHER_API_KEY"
 LATITUDE="$LATITUDE"
