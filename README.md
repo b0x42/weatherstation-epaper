@@ -1,9 +1,15 @@
-# Pi Weather Ink
+<h1 align="center">Pi Weather Ink</h1>
 
-[![Python 3](https://img.shields.io/badge/Python-3-blue.svg)](https://www.python.org/)
-[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-Compatible-c51a4a.svg)](https://www.raspberrypi.org/)
-[![Pirate Weather](https://img.shields.io/badge/Pirate%20Weather-API-purple.svg)](https://pirateweather.net/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3-blue.svg" alt="Python 3"></a>
+  <a href="https://www.raspberrypi.org/"><img src="https://img.shields.io/badge/Raspberry%20Pi-Compatible-c51a4a.svg" alt="Raspberry Pi"></a>
+  <a href="https://pirateweather.net/"><img src="https://img.shields.io/badge/Pirate%20Weather-API-purple.svg" alt="Pirate Weather"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+  <img src="docs/pi-weather-ink-display.jpeg" alt="Pi Weather Ink Display" width="509">
+</p>
 
 A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports multiple display models (bi-color and monochrome). Shows current temperature, daily max, and weather summary.
 
@@ -11,8 +17,6 @@ A Raspberry Pi weather station with Waveshare 2.13" e-Paper displays. Supports m
 - Multi-language weather summaries
 - 10 supported Waveshare 2.13" display models (bi-color and monochrome)
 - Desktop development with built-in e-Paper emulator
-
-<img src="docs/screenshot.png" alt="Display Screenshot" width="509">
 
 ## Table of Contents
 
